@@ -1,0 +1,29 @@
+{% extends 'dashboard/base.html' %}
+{% block dash_content %}
+
+<div style="margin-bottom:28px;">
+  <h1 style="font-family:var(--display);font-size:40px;line-height:1;margin-bottom:6px;">Nouvelle carte <em style="color:var(--peach);">✦</em></h1>
+  <p style="font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;">Programme : {{ program.name }}</p>
+</div>
+
+<div class="card-box">
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div style="margin-bottom:24px;">
+      <label style="display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:8px;">{{ field.label }}</label>
+      <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}"
+             style="width:100%;padding:14px 16px;border:1.5px solid var(--line);border-radius:12px;font-family:var(--sans);font-size:15px;background:var(--cream);outline:none;transition:border-color 0.2s;"
+             onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--line)'"
+             placeholder="{{ field.label }}" {% if field.field.required %}required{% endif %}>
+      {% if field.errors %}<div style="color:#c0392b;font-size:12px;margin-top:4px;">{{ field.errors|join:', ' }}</div>{% endif %}
+    </div>
+    {% endfor %}
+    <div style="display:flex;gap:12px;margin-top:32px;">
+      <a href="{% url 'dashboard:customers' %}" class="btn btn-ghost" style="flex:1;text-align:center;">Annuler</a>
+      <button type="submit" class="btn btn-lime" style="flex:1;">Créer la carte →</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

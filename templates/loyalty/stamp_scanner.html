@@ -1,0 +1,202 @@
+{% extends 'base.html' %}
+{% block title %}Scanner QR — Yokal{% endblock %}
+{% block extra_head %}
+<!-- Add QR Library -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<style>
+  body { background: var(--ink); color: var(--cream); overflow-x: hidden; }
+  .scan-wrap { max-width: 500px; margin: 0 auto; padding: 40px 24px; }
+  
+  #reader {
+    width: 100%;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.1);
+    background: #000;
+    margin-bottom: 24px;
+    position: relative;
+  }
+  
+  /* Style reader elements */
+  #reader__dashboard { padding: 20px !important; background: rgba(0,0,0,0.5) !important; color: white !important; }
+  #reader__status_span { font-family: var(--mono) !important; font-size: 10px !important; text-transform: uppercase !important; }
+  button#html5-qrcode-button-camera-start, 
+  button#html5-qrcode-button-camera-stop {
+    background: var(--lime) !important;
+    color: var(--ink) !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 12px 24px !important;
+    font-weight: 700 !important;
+    font-family: var(--sans) !important;
+    cursor: pointer !important;
+  }
+
+  .recent-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+    transition: transform 0.2s;
+  }
+  .recent-card:active { transform: scale(0.98); }
+
+  .status-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    place-items: center;
+    backdrop-filter: blur(10px);
+    padding: 40px;
+    text-align: center;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+{% include 'partials/nav.html' %}
+
+<div class="scan-wrap">
+  <div style="margin-bottom:32px;">
+    <div style="font-family:var(--mono);font-size:10px;color:var(--lime);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;">Outil Commerçant</div>
+    <h1 style="font-family:var(--display);font-size:42px;line-height:0.95;margin-bottom:12px;">Scanner de <em style="color:var(--lime);">fidélité</em></h1>
+    <p style="opacity:0.6;font-size:14px;">Scannez le QR Code Yokal du client pour ajouter des {{ program.unit_label|lower }}.</p>
+  </div>
+
+  <!-- QR Reader -->
+  <div id="reader"></div>
+
+  <!-- Value adjustment (if not visits) -->
+  {% if program.program_type != 'visits' %}
+  <div style="margin-bottom:24px;">
+    <label style="display:block;font-family:var(--mono);font-size:10px;text-transform:uppercase;opacity:0.5;margin-bottom:8px;">Valeur à ajouter ({{ program.unit_label }})</label>
+    <div style="display:flex;gap:10px;">
+      <input type="number" id="scan-amount" value="{{ program.points_per_unit|floatformat:0 }}" step="0.01"
+             style="flex:1;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px;color:white;font-family:var(--mono);">
+    </div>
+  </div>
+  {% else %}
+  <input type="hidden" id="scan-amount" value="1">
+  {% endif %}
+
+  <!-- Manual entry trigger -->
+  <div style="text-align:center;margin-bottom:40px;">
+    <button onclick="document.getElementById('manual-entry').style.display='block';this.style.display='none'" 
+            style="background:none;border:none;color:var(--lime);font-family:var(--mono);font-size:11px;text-decoration:underline;cursor:pointer;">
+      Saisie manuelle du token
+    </button>
+    <div id="manual-entry" style="display:none;margin-top:16px;">
+        <input type="text" id="manual-token" placeholder="Coller le token UUID ici..." 
+               style="width:100%;margin-bottom:10px;background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px;color:white;font-family:var(--mono);">
+        <button onclick="handleScan(document.getElementById('manual-token').value)" class="btn btn-lime" style="width:100%;justify-content:center;">Valider manuel</button>
+    </div>
+  </div>
+
+  <!-- Recent History -->
+  {% if recent_stamps %}
+  <div>
+    <h3 style="font-family:var(--mono);font-size:10px;text-transform:uppercase;opacity:0.4;margin-bottom:16px;letter-spacing:0.1em;">Derniers passages</h3>
+    {% for stamp in recent_stamps %}
+    <div class="recent-card">
+        <div style="width:40px;height:40px;border-radius:50%;background:rgba(212,255,78,0.1);color:var(--lime);display:grid;place-items:center;font-family:var(--display);font-size:20px;flex-shrink:0;">
+            {{ stamp.card.customer_name|first }}
+        </div>
+        <div style="flex:1;">
+            <div style="font-size:14px;font-weight:600;">{{ stamp.card.customer_name }}</div>
+            <div style="font-size:10px;opacity:0.5;font-family:var(--mono);">{{ stamp.stamped_at|date:"H:i" }} — +{{ stamp.amount|floatformat }}</div>
+        </div>
+        <div style="color:var(--lime);">✓</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+<!-- Overlays -->
+<div id="overlay-success" class="status-overlay" style="background:var(--lime);color:var(--ink);">
+    <div style="font-size:80px;margin-bottom:20px;">🎉</div>
+    <h2 id="success-name" style="font-family:var(--display);font-size:42px;margin-bottom:10px;">Client</h2>
+    <p id="success-msg" style="font-size:20px;opacity:0.8;">Point ajouté avec succès !</p>
+    <div id="reward-badge" style="display:none;margin-top:20px;background:white;padding:10px 20px;border-radius:100px;font-weight:700;animation:bounce 0.5s infinite alternate;">🎁 RÉCOMPENSE PRÊTE !</div>
+    <button onclick="hideOverlays()" class="btn btn-dark" style="margin-top:40px;padding:14px 40px;">Continuer</button>
+</div>
+
+<div id="overlay-error" class="status-overlay" style="background:#c0392b;color:white;">
+    <div style="font-size:80px;margin-bottom:20px;">❌</div>
+    <h2 style="font-family:var(--display);font-size:42px;margin-bottom:10px;">Erreur</h2>
+    <p id="error-msg" style="font-size:20px;opacity:0.8;">Token non reconnu ou expiré.</p>
+    <button onclick="hideOverlays()" class="btn btn-dark" style="margin-top:40px;padding:14px 40px;background:white;color:black;">Réessayer</button>
+</div>
+
+<style>
+@keyframes bounce { from { transform: scale(1); } to { transform: scale(1.1); } }
+</style>
+
+<script>
+const html5QrCode = new Html5Qrcode("reader");
+const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+function onScanSuccess(decodedText, decodedResult) {
+    // decodedText is the token
+    html5QrCode.pause(); // Pause camera while processing
+    handleScan(decodedText);
+}
+
+function handleScan(token) {
+    const amount = document.getElementById('scan-amount').value;
+    const formData = new FormData();
+    formData.append('amount', amount);
+
+    fetch(`/stamp/${token}/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess(data);
+        } else {
+            showError(data.error || "Une erreur est survenue");
+        }
+    })
+    .catch(err => {
+        showError("Token invalide ou erreur réseau.");
+    });
+}
+
+function showSuccess(data) {
+    document.getElementById('overlay-success').style.display = 'grid';
+    document.getElementById('success-name').textContent = data.customer_name;
+    document.getElementById('reward-badge').style.display = data.reward_unlocked ? 'inline-block' : 'none';
+    // Success sound
+    new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3').play();
+}
+
+function showError(msg) {
+    document.getElementById('overlay-error').style.display = 'grid';
+    document.getElementById('error-msg').textContent = msg;
+    // Error sound
+    new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3').play();
+}
+
+function hideOverlays() {
+    document.getElementById('overlay-success').style.display = 'none';
+    document.getElementById('overlay-error').style.display = 'none';
+    html5QrCode.resume();
+}
+
+// Start Scanner automatically on load
+const scannerButtons = document.querySelectorAll('button');
+html5QrCode.start({ facingMode: "environment" }, qrConfig, onScanSuccess);
+
+</script>
+{% endblock %}

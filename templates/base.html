@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Yokal — La fidélité digitale{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F2EDE3;--cream-2:#E8E1D2;--ink:#0E0F0D;--ink-soft:#1A1B19;--line:#D8D1BF;--muted:#6B6B66;--lime:#D4FF4E;--lime-dark:#B8E835;--peach:#FF8854;--peach-soft:#FFD9C5;--wine:#6B1F2E;--sky:#C8E5F7;--white:#FFFFFF;--display:'Instrument Serif',serif;--sans:'Geist',sans-serif;--mono:'JetBrains Mono',monospace;--r:14px;--r-lg:24px;--r-xl:36px;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.85' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.05 0 0 0 0 0.06 0 0 0 0 0.05 0 0 0 0.045 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");pointer-events:none;z-index:1;opacity:0.7;}
+::selection{background:var(--lime);color:var(--ink);}
+a{color:inherit;text-decoration:none;}
+img,svg{display:block;max-width:100%;}
+.wrap{max-width:1320px;margin:0 auto;padding:0 32px;position:relative;z-index:2;}
+h1,h2,h3{font-family:var(--display);font-weight:400;line-height:0.96;letter-spacing:-0.02em;}
+h1 em,h2 em,h3 em{font-style:italic;}
+.mono{font-family:var(--mono);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:100px;font-family:var(--sans);font-weight:500;font-size:15px;cursor:pointer;border:none;transition:transform 0.18s ease,background 0.2s ease;letter-spacing:-0.01em;text-decoration:none;}
+.btn:hover{transform:translateY(-1px);}
+.btn-primary{background:var(--ink);color:var(--cream);}
+.btn-lime{background:var(--lime);color:var(--ink);box-shadow:0 10px 30px rgba(212,255,78,0.35);}
+.btn-lime:hover{background:var(--lime-dark);}
+.btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+.btn-ghost:hover{background:var(--cream-2);}
+.btn-danger{background:#c0392b;color:white;}
+.btn-sm{padding:8px 16px;font-size:13px;}
+/* messages */
+.messages{position:fixed;top:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:10px;}
+.message{padding:14px 20px;border-radius:var(--r);font-size:14px;font-weight:500;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.15);animation:slideIn 0.3s ease;}
+@keyframes slideIn{from{transform:translateX(120%);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.message-success{background:var(--ink);color:var(--lime);}
+.message-warning{background:#f39c12;color:var(--ink);}
+.message-error{background:#c0392b;color:white;}
+.message-info{background:var(--lime);color:var(--ink);}
+</style>
+{% block extra_head %}{% endblock %}
+</head>
+<body>
+
+{% if messages %}
+<div class="messages">
+{% for msg in messages %}
+  <div class="message message-{{ msg.tags }}">{{ msg }}</div>
+{% endfor %}
+</div>
+<script>setTimeout(()=>document.querySelector('.messages')?.remove(),4000);</script>
+{% endif %}
+
+{% block body %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,35 @@
+# Environnement & Secrets
+.env
+*.env
+
+# Base de données locale
+db.sqlite3
+data_export.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+env/
+*.egg-info/
+dist/
+build/
+
+# Fichiers statiques collectés
+staticfiles/
+
+# Médias uploadées
+media/
+
+# IDE
+.vscode/
+*.suo
+*.user
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db

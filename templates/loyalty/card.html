@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% block title %}{{ card.customer_name }} — {{ program.name }}{% endblock %}
+{% block extra_head %}
+<style>
+  :root {
+    --p: {{ program.color_primary|default:'#1a1a1a' }};
+    --s: {{ program.color_secondary|default:'#84cc16' }};
+  }
+  
+  body { 
+    background: {{ program.color_primary }}; 
+    color: white; 
+    min-height: 100vh;
+  }
+  body::before { display: none; }
+
+  .layout-wrap {
+    max-width: 440px;
+    margin: 0 auto;
+    padding: 24px 20px 60px;
+  }
+
+  .wallet-card {
+    width: 100%;
+    height: 230px;
+    border-radius: 24px;
+    padding: 24px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    margin-bottom: 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .wallet-card:hover { transform: translateY(-5px) scale(1.02); }
+
+  /* Template: Classic */
+  .tpl-classic {
+    background: var(--p);
+    background-image: linear-gradient(135deg, var(--p), var(--s)30 90%, var(--p));
+  }
+
+  /* Template: Glass */
+  .tpl-glass {
+    background: linear-gradient(135deg, var(--p), var(--s));
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .tpl-glass::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(10px);
+    z-index: 0;
+  }
+  .tpl-glass > * { position: relative; z-index: 1; }
+
+  /* Template: Bold */
+  .tpl-bold {
+    background: white !important;
+    color: black !important;
+    border: 4px solid var(--p);
+    border-radius: 12px;
+    box-shadow: 10px 10px 0 var(--p);
+  }
+  .tpl-bold .progress-track { background: #eee !important; }
+  .tpl-bold .stamp-slot { background: #f0f0f0 !important; border: 2px solid #ddd !important; color: black !important; }
+  .tpl-bold .stamp-slot.filled { background: var(--p) !important; border-color: var(--p) !important; color: white !important; }
+
+  /* Template: Luxury */
+  .tpl-luxury {
+    background: #0a0a0a;
+    border: 1px solid rgba(255,255,255,0.15);
+    background-image: radial-gradient(circle at top right, rgba(255,255,255,0.05), transparent);
+  }
+  .tpl-luxury .brand-font { font-family: var(--display); font-style: italic; }
+
+  /* Common elements */
+  .stamp-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .stamp-slot {
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    display: grid;
+    place-items: center;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .stamp-slot.filled {
+    background: var(--s);
+    color: var(--ink);
+  }
+
+  .pill-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    background: rgba(255,255,255,0.1);
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="layout-wrap">
+  
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:32px;">
+    <div style="font-family:var(--display);font-size:24px;letter-spacing:-0.04em;">Yokal<span style="color:var(--s);">.</span></div>
+    <div class="pill-badge" style="opacity:0.6;">Modèle: {{ program.get_card_template_display }}</div>
+  </div>
+
+  <!-- THE CARD -->
+  <div class="wallet-card tpl-{{ program.card_template }}">
+    
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div>
+        {% if program.logo %}
+        <img src="{{ program.logo.url }}" style="height:34px;border-radius:6px;object-fit:contain;" alt="Logo">
+        {% else %}
+        <div style="width:34px;height:34px;border-radius:8px;background:white;color:black;display:grid;place-items:center;font-family:var(--display);font-size:18px;font-weight:700;">{{ program.merchant.business_name|first }}</div>
+        {% endif %}
+      </div>
+      <div style="font-family:var(--mono);font-size:8px;opacity:0.6;text-transform:uppercase;letter-spacing:0.15em;">FIDÉLITÉ</div>
+    </div>
+
+    <div>
+      <div style="font-family:var(--mono);font-size:9px;opacity:0.6;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:2px;">Détenteur</div>
+      <div style="font-family:var(--display);font-size:26px;line-height:1;margin-bottom:4px;{% if program.card_template == 'luxury' %}font-style:italic;{% endif %}">{{ card.customer_name }}</div>
+      <div style="font-family:var(--mono);font-size:10px;opacity:0.6;">{{ program.merchant.business_name }}</div>
+    </div>
+
+    <!-- Progress / Stamps Section -->
+    <div>
+      {% if program.program_type == 'visits' %}
+      <div class="stamp-grid">
+        {% for i in "1234567890"|make_list %}
+          <div class="stamp-slot {% if forloop.counter <= card.balance %}filled{% endif %}">
+            {% if forloop.counter <= card.balance %}✓{% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div style="display:flex;justify-content:space-between;margin-bottom:8px;font-family:var(--mono);font-size:10px;">
+        <span style="opacity:0.7;">Progression</span>
+        <span><strong>{{ card.balance|floatformat:0 }}</strong> / {{ program.reward_threshold }}</span>
+      </div>
+      <div class="progress-track" style="height:6px;background:rgba(255,255,255,0.15);border-radius:100px;overflow:hidden;">
+        <div style="height:100%;width:{{ card.progress_percent }}%;background:{% if program.card_template == 'bold' %}var(--p){% else %}var(--s){% endif %};border-radius:100px;transition:width 1s cubic-bezier(0.34, 1.56, 0.64, 1);"></div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Reward Status -->
+  {% if pending_rewards %}
+  <div style="background:var(--s);color:var(--ink);border-radius:24px;padding:24px;margin-bottom:28px;box-shadow:0 15px 30px rgba(0,0,0,0.1);text-align:center;">
+    <div style="font-family:var(--display);font-size:28px;margin-bottom:8px;font-style:italic;">Récompense prête ! 🎁</div>
+    <p style="font-size:14px;margin-bottom:16px;opacity:0.9;">{{ program.reward_description }}</p>
+    <div style="font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;border-top:1px solid rgba(0,0,0,0.1);padding-top:16px;">Présentez ce code en caisse</div>
+  </div>
+  {% endif %}
+
+  <!-- Google Wallet CTA -->
+  <div style="text-align:center;margin-bottom:40px;">
+    {% if wallet_url %}
+    <a href="{{ wallet_url }}" style="display:inline-flex;align-items:center;justify-content:center;gap:12px;background:white;color:black;border-radius:100px;padding:18px 36px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 10px 30px rgba(0,0,0,0.2);width:100%;">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Wallet_Icon.svg" style="height:24px;" alt="Wallet">
+      Ajouter à Google Wallet
+    </a>
+    {% else %}
+    <div style="background:rgba(255,255,255,0.08);border-radius:20px;padding:18px;font-size:13px;opacity:0.6;font-family:var(--mono);">
+      🔧 Google Wallet en cours de configuration
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- History -->
+  {% if history %}
+  <div style="background:rgba(255,255,255,0.05);border-radius:24px;padding:24px;border:1px solid rgba(255,255,255,0.05);">
+    <h3 style="font-family:var(--display);font-size:20px;margin-bottom:18px;font-style:italic;">Activité récente</h3>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      {% for entry in history %}
+      <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,0.05);">
+        <div>
+          <div style="font-size:14px;font-weight:600;">+{{ entry.amount|floatformat }} {{ program.unit_label }}</div>
+          <div style="font-family:var(--mono);font-size:10px;opacity:0.5;">{{ entry.stamped_at|date:"d F Y" }}</div>
+        </div>
+        <div style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.1);display:grid;place-items:center;font-size:12px;">✦</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div style="text-align:center;margin-top:40px;opacity:0.3;font-family:var(--mono);font-size:10px;letter-spacing:0.1em;">YOKAL LOYALTY PLATFORM</div>
+</div>
+{% endblock %}

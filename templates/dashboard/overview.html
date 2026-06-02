@@ -1,0 +1,110 @@
+{% extends 'dashboard/base.html' %}
+{% block dash_content %}
+
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px;">
+  <div>
+    <h1 style="font-family:var(--display);font-size:40px;line-height:1;letter-spacing:-0.02em;">Vue d'ensemble <em style="color:var(--peach);">✦</em></h1>
+    <p style="font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-top:6px;">{{ user.merchant_profile.business_name }}</p>
+  </div>
+  <div style="display:flex;gap:10px;">
+    <a href="{% url 'loyalty:new_card' %}" class="btn btn-lime btn-sm">+ Nouvelle carte</a>
+    <a href="{% url 'loyalty:stamp_scanner' %}" class="btn btn-primary btn-sm">Scanner un QR</a>
+  </div>
+</div>
+
+{% if not program %}
+<div style="background:var(--lime);border-radius:16px;padding:28px 32px;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;gap:20px;">
+  <div>
+    <div style="font-family:var(--display);font-size:22px;margin-bottom:6px;">Configurez votre programme de fidélité</div>
+    <p style="color:rgba(14,15,13,0.7);font-size:14px;">Définissez vos couleurs, récompenses et commencez à tamponner.</p>
+  </div>
+  <a href="{% url 'loyalty:program_setup' %}" class="btn btn-primary">Configurer →</a>
+</div>
+{% endif %}
+
+<!-- KPI Cards -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">Clients total</div>
+    <div class="kpi-value"><em>{{ stats.total_customers|default:0 }}</em></div>
+    <div class="kpi-sub">Cartes actives</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">{{ program.unit_label }} ce mois</div>
+    <div class="kpi-value">{{ stats.stamps_this_month|default:0 }}</div>
+    <div class="kpi-sub">Transactions enregistrées</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Récompenses</div>
+    <div class="kpi-value">{{ stats.rewards_unlocked|default:0 }}</div>
+    <div class="kpi-sub">{{ stats.rewards_redeemed|default:0 }} utilisées</div>
+  </div>
+  <div class="kpi-card" style="background:var(--ink);color:var(--cream);">
+    <div class="kpi-label" style="color:rgba(242,237,227,0.55);">Programme</div>
+    <div class="kpi-value" style="font-size:24px;color:var(--lime);">{% if program %}{{ program.reward_threshold }} 🎯{% else %}—{% endif %}</div>
+    <div class="kpi-sub" style="color:rgba(242,237,227,0.55);">{% if program %}{{ program.unit_label }}/récompense{% else %}non configuré{% endif %}</div>
+  </div>
+</div>
+
+<!-- Recent activity -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+  {% if pending_rewards %}
+  <div class="card-box" style="grid-column: span 2; background: var(--peach-soft); border-color: var(--peach);">
+    <div class="section-title">Récompenses à distribuer <em style="color:var(--peach);">🎁</em></div>
+    <div style="display:grid;grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap:12px;">
+      {% for reward in pending_rewards %}
+      <div style="background:white; border-radius:14px; padding:16px; display:flex; align-items:center; justify-content:space-between; border:1px solid var(--peach);">
+        <div>
+          <div style="font-weight:700; font-size:14px;">{{ reward.card.customer_name }}</div>
+          <div style="font-size:12px; color:var(--muted);">Gagnée le {{ reward.unlocked_at|date:"d M" }}</div>
+        </div>
+        <form method="post" action="{% url 'loyalty:redeem_reward' reward.id %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-primary btn-sm">Valider le cadeau</button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="card-box">
+    <div class="section-title">Activité récente <em style="color:var(--peach);">✦</em></div>
+    {% if recent_history %}
+    <div style="display:flex;flex-direction:column;gap:2px;">
+    {% for stamp in recent_history %}
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line-2);">
+        <div style="width:36px;height:36px;border-radius:50%;background:var(--lime);display:grid;place-items:center;font-family:var(--display);font-style:italic;font-size:16px;color:var(--ink);flex-shrink:0;">{{ stamp.card.customer_name|first }}</div>
+        <div style="flex:1;">
+          <div style="font-size:13px;font-weight:600;">{{ stamp.card.customer_name }}</div>
+          <div style="font-family:var(--mono);font-size:10px;color:var(--muted);">{{ stamp.stamped_at|date:"d M · H:i" }}</div>
+        </div>
+        <div style="background:var(--lime);color:var(--ink);padding:3px 10px;border-radius:100px;font-family:var(--mono);font-size:10px;font-weight:700;">+{{ stamp.amount|floatformat }}</div>
+      </div>
+    {% endfor %}
+    </div>
+    {% else %}
+    <p style="color:var(--muted);font-size:14px;">Aucune activité pour le moment.</p>
+    {% endif %}
+  </div>
+
+  <div class="card-box">
+    <div class="section-title">Actions rapides <em style="color:var(--peach);">✦</em></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <a href="{% url 'loyalty:stamp_scanner' %}" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--ink);color:var(--cream);border-radius:12px;text-decoration:none;transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--lime);display:grid;place-items:center;font-size:18px;color:var(--ink);">📷</div>
+        <div><div style="font-weight:600;font-size:14px;">Tamponner un client</div><div style="font-size:12px;color:rgba(242,237,227,0.6);">Scanner le QR code</div></div>
+      </a>
+      <a href="{% url 'loyalty:new_card' %}" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--cream-2);border-radius:12px;text-decoration:none;border:1px solid var(--line);transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--peach-soft);display:grid;place-items:center;font-size:18px;">🎫</div>
+        <div><div style="font-weight:600;font-size:14px;color:var(--ink);">Nouvelle carte client</div><div style="font-size:12px;color:var(--muted);">Inscrire un nouveau client</div></div>
+      </a>
+      <a href="{% url 'loyalty:program_setup' %}" style="display:flex;align-items:center;gap:14px;padding:16px;background:var(--cream-2);border-radius:12px;text-decoration:none;border:1px solid var(--line);transition:transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--sky);display:grid;place-items:center;font-size:18px;">⚙️</div>
+        <div><div style="font-weight:600;font-size:14px;color:var(--ink);">Mon programme</div><div style="font-size:12px;color:var(--muted);">Couleurs, logo, récompense</div></div>
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

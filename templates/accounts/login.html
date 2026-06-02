@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Connexion — Yokal{% endblock %}
+{% block body %}
+{% include 'partials/nav.html' %}
+<div style="max-width:460px;margin:80px auto;padding:0 24px;">
+  <div style="text-align:center;margin-bottom:36px;">
+    <div style="font-family:var(--display);font-size:52px;letter-spacing:-0.04em;margin-bottom:8px;">Yokal<span style="color:var(--lime-dark);">.</span></div>
+    <h1 style="font-family:var(--display);font-size:clamp(28px,4vw,40px);">Bon <em style="color:var(--peach);">retour</em></h1>
+  </div>
+  <form method="post" style="background:white;border-radius:24px;border:1px solid var(--line);padding:36px;">
+    {% csrf_token %}
+    {% for field in form %}
+    <div style="margin-bottom:18px;">
+      <label style="display:block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:0.1em;color:var(--muted);margin-bottom:7px;">{{ field.label }}</label>
+      <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}"
+             style="width:100%;padding:13px 16px;border:1.5px solid var(--line);border-radius:12px;font-family:var(--sans);font-size:15px;background:var(--cream);outline:none;transition:border-color 0.2s;"
+             onfocus="this.style.borderColor='var(--ink)'" onblur="this.style.borderColor='var(--line)'"
+             placeholder="{{ field.label }}" {% if field.field.required %}required{% endif %} autofocus>
+      {% if field.errors %}<div style="color:#c0392b;font-size:12px;margin-top:4px;">{{ field.errors|join:', ' }}</div>{% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;font-size:16px;padding:16px;margin-top:8px;">
+      Connexion →
+    </button>
+  </form>
+  <p style="text-align:center;margin-top:20px;color:var(--muted);font-size:14px;">
+    Pas encore de compte ? <a href="{% url 'accounts:register' %}" style="color:var(--ink);font-weight:600;">S'inscrire gratuitement</a>
+  </p>
+</div>
+{% endblock %}
