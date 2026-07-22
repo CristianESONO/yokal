@@ -1,0 +1,645 @@
+{% extends 'base.html' %}
+{% block title %}Créer un compte — Yokalma{% endblock %}
+
+{% block extra_head %}
+{% endblock %}
+
+{% block body %}
+<div class="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white">
+  
+  <!-- Left Side: Card Preview -->
+  <div class="hidden lg:flex flex-col px-10 py-12 bg-slate-900 relative overflow-hidden">
+    <!-- Branding -->
+    <div class="relative z-10 mb-8">
+      <div class="bg-white rounded-xl px-4 py-2 inline-flex">
+        {% include 'partials/brand_logo.html' with height=34 %}
+      </div>
+    </div>
+    
+    <!-- Background Accents -->
+    <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0); background-size:32px 32px;"></div>
+    <div class="absolute top-1/4 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[60px]"></div>
+    <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[60px]"></div>
+
+    <div class="relative z-10 flex flex-col flex-1 justify-center max-w-md mx-auto w-full">
+      <p class="text-sm text-slate-400 mb-6 text-center">Aperçu de votre carte</p>
+      
+      <!-- Preview Card -->
+      <div class="card-preview rounded-2xl p-6 text-white shadow-[0_10px_40px_rgba(59,130,246,0.3)] max-w-[320px] mx-auto w-full transform rotate-1" style="background:linear-gradient(135deg, {{ wizard_data.design.primary_color|default:'#3b82f6' }} 0%, #1e40af 100%);">
+        <div class="flex justify-between items-start mb-8">
+          <div class="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center backdrop-blur-sm overflow-hidden" id="card-logo-container">
+            <svg id="card-logo-placeholder" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-white/80">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <circle cx="9" cy="9" r="2"/>
+              <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/>
+            </svg>
+          </div>
+          <span class="text-xs font-semibold uppercase tracking-wider text-white/60">Fidélité</span>
+        </div>
+        
+        <div class="bg-white/10 rounded-xl p-5 mb-4 backdrop-blur-sm border border-white/5">
+          <div class="text-sm text-white/80 mb-1">Votre commerce</div>
+          <div class="text-lg font-bold card-preview-value">{{ wizard_data.business.business_name|default:"Votre entreprise" }}</div>
+        </div>
+        
+        <div class="bg-white/10 rounded-xl p-5 mb-4 backdrop-blur-sm border border-white/5">
+          <div class="text-sm text-white/80 mb-1">Client Fidèle</div>
+          <div class="text-lg font-bold" id="card-progress">0 / {{ wizard_data.program.stamps_needed|default:10 }} {{ wizard_data.program.unit_label|default:"tampons" }}</div>
+        </div>
+        
+        <div class="pt-4 border-t border-white/20">
+          <p class="text-xs text-white/60 mb-2" id="card-stamps-text">0 / {{ wizard_data.program.stamps_needed|default:10 }} {{ wizard_data.program.unit_label|default:"tampons" }}</p>
+          <div class="flex gap-1.5 flex-wrap" id="card-dots">
+            {% with ''|center:10 as range %}
+              {% for _ in range %}
+                <div class="w-2.5 h-2.5 rounded-full bg-white/30 card-preview-dot"></div>
+              {% endfor %}
+            {% endwith %}
+          </div>
+        </div>
+
+        {% if wizard_data.program.program_type == 'points' %}
+        <div class="bg-white/10 rounded-xl p-4 mt-4 backdrop-blur-sm border border-white/5" id="rewards-section">
+          <div class="text-xs font-semibold text-white/80 mb-3">Récompenses disponibles</div>
+          <div id="preview-dynamic-rewards">
+            <!-- Dynamic elements will be appended here via JS -->
+            {% if wizard_data.program.reward_50 %}<div class="flex items-center gap-3 py-2 border-b border-white/10"><span class="bg-white/20 px-2 py-1 rounded text-xs font-semibold">50 pts</span><span class="text-sm">{{ wizard_data.program.reward_50 }}</span></div>{% endif %}
+          </div>
+        </div>
+        {% endif %}
+
+        {% if step == '4' %}
+        <div class="bg-white/10 rounded-xl p-4 mt-4 backdrop-blur-sm border border-white/5">
+          <div class="flex justify-between py-2 border-b border-white/10">
+            <span class="text-xs text-white/60">Commerce</span>
+            <span class="text-sm font-semibold">{{ wizard_data.business.business_name|default:"-" }}</span>
+          </div>
+          <div class="flex justify-between py-2 border-b border-white/10">
+            <span class="text-xs text-white/60">Programme</span>
+            <span class="text-sm font-semibold uppercase">{{ wizard_data.program.program_type|default:"stamps" }}</span>
+          </div>
+          {% if wizard_data.program.program_type == 'stamps' %}
+          <div class="flex justify-between py-2 border-b border-white/10">
+            <span class="text-xs text-white/60">Objectif</span>
+            <span class="text-sm font-semibold">{{ wizard_data.program.stamps_needed|default:10 }} {{ wizard_data.program.unit_label|default:"tampons" }}</span>
+          </div>
+          <div class="flex justify-between py-2">
+            <span class="text-xs text-white/60">Récompense</span>
+            <span class="text-sm font-semibold">{{ wizard_data.program.reward_name|default:"-" }}</span>
+          </div>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+    
+    <div class="relative z-10 text-center text-xs text-slate-500 mt-8">© 2024 Yokalma. Tous droits réservés.</div>
+  </div>
+  
+  <!-- Right Side: Wizard Form -->
+  <div class="flex flex-col bg-white">
+    <!-- Top Nav (Mobile & Login Link) -->
+    <div class="flex items-center justify-between px-8 py-6 border-b border-gray-100">
+      <div class="lg:hidden">
+        {% include 'partials/brand_logo.html' with height=32 %}
+      </div>
+      <div class="hidden lg:block"></div> <!-- Spacer for flex-between -->
+      <a href="{% url 'accounts:login' %}" class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Déjà un compte ?</a>
+    </div>
+    
+    <!-- Wizard Steps Indicator -->
+    <div class="px-8 py-6 border-b border-gray-100 bg-gray-50/50">
+      <div class="flex items-center justify-center max-w-lg mx-auto">
+        <!-- Step 1 -->
+        <div class="flex flex-col items-center">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all {% if step == '1' %}bg-gray-900 text-white shadow-md{% elif step|floatformat > 1 %}bg-primary text-white shadow-md{% else %}bg-gray-100 text-gray-400{% endif %}">
+            {% if step|floatformat > 1 %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>{% else %}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>{% endif %}
+          </div>
+          <span class="text-xs font-semibold mt-2 {% if step == '1' %}text-gray-900{% elif step|floatformat > 1 %}text-primary{% else %}text-gray-400{% endif %}">Compte</span>
+        </div>
+        <div class="w-12 h-0.5 mx-2 {% if step|floatformat > 1 %}bg-primary{% else %}bg-gray-200{% endif %}"></div>
+        
+        <!-- Step 2 -->
+        <div class="flex flex-col items-center">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all {% if step == '2' %}bg-gray-900 text-white shadow-md{% elif step|floatformat > 2 %}bg-primary text-white shadow-md{% else %}bg-gray-100 text-gray-400{% endif %}">
+            {% if step|floatformat > 2 %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>{% else %}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/></svg>{% endif %}
+          </div>
+          <span class="text-xs font-semibold mt-2 {% if step == '2' %}text-gray-900{% elif step|floatformat > 2 %}text-primary{% else %}text-gray-400{% endif %}">Commerce</span>
+        </div>
+        <div class="w-12 h-0.5 mx-2 {% if step|floatformat > 2 %}bg-primary{% else %}bg-gray-200{% endif %}"></div>
+
+        <!-- Step 3 -->
+        <div class="flex flex-col items-center">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all {% if step == '3' %}bg-gray-900 text-white shadow-md{% elif step|floatformat > 3 %}bg-primary text-white shadow-md{% else %}bg-gray-100 text-gray-400{% endif %}">
+            {% if step|floatformat > 3 %}<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>{% else %}<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>{% endif %}
+          </div>
+          <span class="text-xs font-semibold mt-2 {% if step == '3' %}text-gray-900{% elif step|floatformat > 3 %}text-primary{% else %}text-gray-400{% endif %}">Programme</span>
+        </div>
+        <div class="w-12 h-0.5 mx-2 {% if step|floatformat > 3 %}bg-primary{% else %}bg-gray-200{% endif %}"></div>
+
+        <!-- Step 4 -->
+        <div class="flex flex-col items-center">
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all {% if step == '4' %}bg-gray-900 text-white shadow-md{% else %}bg-gray-100 text-gray-400{% endif %}">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+          </div>
+          <span class="text-xs font-semibold mt-2 {% if step == '4' %}text-gray-900{% else %}text-gray-400{% endif %}">Design</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Form Area -->
+    <div class="flex-1 flex px-8 py-10 lg:px-16 justify-center">
+      <div class="w-full max-w-lg">
+        <div class="mb-10">
+          {% if step == '1' %}
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Créez votre compte</h2>
+          <p class="text-gray-500">Entrez vos informations personnelles pour débuter</p>
+          {% elif step == '2' %}
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Votre commerce</h2>
+          <p class="text-gray-500">Renseignez les informations de votre entreprise</p>
+          {% elif step == '3' %}
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Votre programme</h2>
+          <p class="text-gray-500">Choisissez la structure de fidélité adaptée à vos clients</p>
+          {% elif step == '4' %}
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">Design</h2>
+          <p class="text-gray-500">Personnalisez l'apparence de la carte à vos couleurs</p>
+          {% endif %}
+        </div>
+        
+        <form method="post" class="space-y-6" enctype="multipart/form-data">
+          {% csrf_token %}
+          
+          {% if step == '3' %}
+          <!-- Templates Selection -->
+          <div class="flex flex-col gap-2 mb-6">
+            <label class="text-sm font-semibold text-gray-900">Démarrer avec un modèle (Optionnel)</label>
+            <p class="text-xs text-gray-500">Choisissez un modèle pré-configuré pour votre secteur d'activité</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3" id="signup-templates-container">
+              <div class="text-gray-400 text-xs py-2">Chargement des modèles...</div>
+            </div>
+          </div>
+
+          <!-- Program Type Selector -->
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-semibold text-gray-900">Type de programme</label>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="border-2 rounded-xl p-4 cursor-pointer transition-all hover:border-primary hover:bg-primary/5 program-type-card {% if wizard_data.program.program_type == 'stamps' or not wizard_data.program.program_type %}border-primary bg-primary/5 shadow-sm{% else %}border-gray-200{% endif %}" onclick="selectProgramType('stamps')">
+                <div class="font-bold text-gray-900 mb-1 text-sm">Tampons</div>
+                <div class="text-xs text-gray-500">{{ wizard_data.program.stamps_needed|default:10 }} tampons = 1 récompense</div>
+              </div>
+              <div class="border-2 rounded-xl p-4 cursor-pointer transition-all hover:border-primary hover:bg-primary/5 program-type-card {% if wizard_data.program.program_type == 'points' %}border-primary bg-primary/5 shadow-sm{% else %}border-gray-200{% endif %}" onclick="selectProgramType('points')">
+                <div class="font-bold text-gray-900 mb-1 text-sm">Points</div>
+                <div class="text-xs text-gray-500">Cumul de points flexible</div>
+              </div>
+              <div class="border-2 rounded-xl p-4 cursor-pointer transition-all hover:border-primary hover:bg-primary/5 program-type-card {% if wizard_data.program.program_type == 'spend' %}border-primary bg-primary/5 shadow-sm{% else %}border-gray-200{% endif %}" onclick="selectProgramType('spend')">
+                <div class="font-bold text-gray-900 mb-1 text-sm">Dépenses</div>
+                <div class="text-xs text-gray-500">Cumul de FCFA dépensés</div>
+              </div>
+            </div>
+            <input type="hidden" name="program_type" id="program_type" value="{{ wizard_data.program.program_type|default:'stamps' }}">
+          </div>
+          <div id="stamps-fields" class="space-y-6" style="{% if wizard_data.program.program_type == 'points' %}display:none;{% endif %}">
+          {% endif %}
+          
+          {% for field in form %}
+            {% if step == '3' and field.name in 'reward_50 reward_100 reward_150 reward_200' %}
+            <!-- Skipped fixed reward fields to use dynamic UI -->
+            {% else %}
+            
+            {% if step == '3' and field.name == 'points_per_visit' %}
+            <div class="flex-col gap-2" id="points-fields" style="{% if wizard_data.program.program_type != 'points' %}display:none;{% else %}display:flex;{% endif %}">
+            {% elif step == '3' and field.name == 'spend_threshold' %}
+            <div class="flex-col gap-2" id="spend-fields" style="{% if wizard_data.program.program_type != 'spend' %}display:none;{% else %}display:flex;{% endif %}">
+            {% elif step == '3' and field.name in 'stamps_needed reward_name unit_label' %}
+            <div class="flex flex-col gap-2" id="stamps-field-{{ field.name }}">
+            {% elif step == '3' and field.name == 'program_type' %}
+            <!-- Skip type widget as handled custom -->
+            {% else %}
+            <div class="flex flex-col gap-2">
+            {% endif %}
+            
+              {% if not step == '3' or field.name != 'program_type' %}
+              <label class="text-sm font-semibold text-gray-900">{{ field.label }}</label>
+              <div class="relative flex items-center">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                  {% if 'email' in field.name %}<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2" stroke-width="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" stroke-width="2"/></svg>
+                  {% elif 'password' in field.name %}<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" stroke-width="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4" stroke-width="2"/></svg>
+                  {% elif 'phone' in field.name %}<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" stroke-width="2"/></svg>
+                  {% else %}<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke-width="2"/><circle cx="12" cy="7" r="4" stroke-width="2"/></svg>{% endif %}
+                </div>
+                <input type="{% if field.field.widget.input_type %}{{ field.field.widget.input_type }}{% else %}text{% endif %}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}"
+                       class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-sm text-gray-900 bg-transparent placeholder-gray-400"
+                       placeholder="{{ field.label }}" {% if field.field.required %}required{% endif %}
+                       {% if 'business_name' in field.name %}id="business-name-input"{% endif %}
+                       {% if 'stamps_needed' in field.name %}id="stamps-needed-input"{% endif %}
+                       {% if 'unit_label' in field.name %}id="unit-label-input"{% endif %}
+                       {% if 'reward_name' in field.name %}id="reward-name-input"{% endif %}
+                       {% if 'spend_threshold' in field.name %}id="spend-threshold-input"{% endif %}>
+              </div>
+              {% if field.errors %}<div class="text-xs text-red-500 mt-1">{{ field.errors|join:', ' }}</div>{% endif %}
+              {% if field.help_text %}<div class="text-xs text-gray-500 mt-1">{{ field.help_text }}</div>{% endif %}
+              {% endif %} <!-- end field check -->
+            </div>
+            {% endif %}
+          {% endfor %}
+          
+          {% if step == '3' %}
+            <!-- Dynamic Rewards Container -->
+            <div id="dynamic-rewards-section" style="{% if wizard_data.program.program_type != 'points' %}display:none;{% else %}display:block;{% endif %}" class="mt-6 pt-6 border-t border-gray-100">
+              <div class="flex justify-between items-center mb-4">
+                <div>
+                  <h3 class="text-sm font-semibold text-gray-900">Paliers de récompenses</h3>
+                  <p class="text-xs text-gray-500">Configurez les cadeaux selon les points (le 1er sert de seuil de base)</p>
+                </div>
+                <button type="button" onclick="addRewardCard()" class="px-3 py-1.5 bg-gray-900 hover:bg-gray-800 text-white text-xs font-semibold rounded-lg shadow-sm transition-colors">+ Ajouter</button>
+              </div>
+              <div id="rewards-list" class="space-y-4">
+                <!-- Initial Card -->
+              </div>
+            </div>
+          </div> <!-- Close stamps-fields / wrap -->
+          {% endif %}
+          
+          {% if step == '4' %}
+          <!-- Color Picker -->
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-semibold text-gray-900">Couleur de l'interface de votre carte</label>
+            <div class="grid grid-cols-4 sm:grid-cols-8 gap-3 mb-2">
+              {% for color in predefined_colors %}
+              <div class="w-10 h-10 rounded-xl cursor-pointer transition-transform hover:scale-110 border-2 {% if wizard_data.design.primary_color == color %}border-gray-900 shadow-md scale-110{% else %}border-transparent{% endif %} color-option" 
+                   style="background-color:{{ color }};"
+                   data-color="{{ color }}"
+                   onclick="selectColor('{{ color }}')"></div>
+              {% endfor %}
+            </div>
+            <div class="flex items-center gap-3">
+              <input type="color" id="color-picker" class="w-12 h-12 rounded-xl cursor-pointer border border-gray-200" value="{{ wizard_data.design.primary_color|default:'#3b82f6' }}" oninput="selectColor(this.value)">
+              <input type="text" id="color-input" class="flex-1 px-4 py-3 border border-gray-200 rounded-xl text-sm focus:border-primary focus:ring-4 focus:ring-primary/10 outline-none transition-all text-gray-900" value="{{ wizard_data.design.primary_color|default:'#3b82f6' }}" placeholder="#3b82f6" oninput="selectColor(this.value)">
+            </div>
+            <input type="hidden" name="primary_color" id="primary_color" value="{{ wizard_data.design.primary_color|default:'#3b82f6' }}">
+            <input type="hidden" name="secondary_color" id="secondary_color" value="{{ wizard_data.design.secondary_color|default:'#2563eb' }}">
+          </div>
+          {% endif %}
+          
+          <!-- Navigation -->
+          <div class="flex justify-between items-center mt-12 pt-6 border-t border-gray-100">
+            {% if step != '1' %}
+            <a href="?step={{ step|floatformat|add:-1 }}" class="inline-flex items-center px-4 py-2.5 bg-white border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors text-sm">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Retour
+            </a>
+            {% else %}
+            <div></div> <!-- Spacer -->
+            {% endif %}
+            
+            <button type="submit" class="inline-flex flex-row-reverse items-center px-6 py-3 bg-primary hover:bg-primary-hover text-white font-medium rounded-xl transition-all shadow-sm hover:shadow text-sm">
+              <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>{% if step == '4' %}Créer mon compte{% else %}Continuer{% endif %}</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function selectProgramType(type) {
+  document.getElementById('program_type').value = type;
+  const cards = document.querySelectorAll('.program-type-card');
+  cards.forEach(card => {
+    card.classList.remove('border-primary', 'bg-primary/5', 'shadow-sm');
+    card.classList.add('border-gray-200');
+  });
+  
+  const selectedCard = Array.from(cards).find(c => c.getAttribute('onclick').includes(type));
+  if (selectedCard) {
+    selectedCard.classList.remove('border-gray-200');
+    selectedCard.classList.add('border-primary', 'bg-primary/5', 'shadow-sm');
+  }
+  
+  const stampsFields = document.getElementById('stamps-fields');
+  const pointsFields = document.getElementById('points-fields');
+  const spendFields = document.getElementById('spend-fields');
+  const dynRewards = document.getElementById('dynamic-rewards-section');
+  const rewardsSection = document.getElementById('rewards-section');
+  
+  if (type === 'stamps') {
+    if(stampsFields) stampsFields.style.display = 'block';
+    if(pointsFields) pointsFields.style.display = 'none';
+    if(spendFields) spendFields.style.display = 'none';
+    if(dynRewards) dynRewards.style.display = 'none';
+    if(rewardsSection) rewardsSection.style.display = 'none';
+    
+    const s1 = document.getElementById('stamps-field-stamps_needed');
+    const s2 = document.getElementById('stamps-field-unit_label');
+    const s3 = document.getElementById('stamps-field-reward_name');
+    if (s1) s1.style.display = 'flex';
+    if (s2) s2.style.display = 'flex';
+    if (s3) s3.style.display = 'flex';
+  } else if (type === 'spend') {
+    if(stampsFields) stampsFields.style.display = 'block';
+    if(pointsFields) pointsFields.style.display = 'none';
+    if(spendFields) spendFields.style.display = 'flex';
+    if(dynRewards) dynRewards.style.display = 'none';
+    if(rewardsSection) rewardsSection.style.display = 'none';
+    
+    const s1 = document.getElementById('stamps-field-stamps_needed');
+    const s2 = document.getElementById('stamps-field-unit_label');
+    const s3 = document.getElementById('stamps-field-reward_name');
+    if (s1) s1.style.display = 'none';
+    if (s2) s2.style.display = 'none';
+    if (s3) s3.style.display = 'flex'; // Keep reward description
+  } else { // points
+    if(stampsFields) stampsFields.style.display = 'none';
+    if(pointsFields) pointsFields.style.display = 'flex';
+    if(spendFields) spendFields.style.display = 'none';
+    if(dynRewards) dynRewards.style.display = 'block';
+    if(rewardsSection) rewardsSection.style.display = 'block';
+  }
+  updateCardPreview();
+}
+
+function selectColor(color) {
+  const primaryInput = document.getElementById('primary_color');
+  const secondaryInput = document.getElementById('secondary_color');
+  const pickerInput = document.getElementById('color-picker');
+  const textInput = document.getElementById('color-input');
+  
+  if (primaryInput) primaryInput.value = color;
+  if (pickerInput) pickerInput.value = color;
+  if (textInput) textInput.value = color;
+  
+  const secColor = darkenHex(color, 40);
+  if (secondaryInput) secondaryInput.value = secColor;
+  
+  document.querySelectorAll('.color-option').forEach(opt => {
+    opt.style.outline = 'none';
+    opt.style.transform = '';
+    opt.style.boxShadow = '';
+    opt.style.borderColor = 'transparent';
+  });
+  const sel = document.querySelector('.color-option[data-color="' + color + '"]');
+  if (sel) {
+    sel.style.outline = '3px solid #111';
+    sel.style.outlineOffset = '2px';
+    sel.style.transform = 'scale(1.15)';
+  }
+  
+  const cardPreview = document.querySelector('.card-preview');
+  if (cardPreview) {
+    cardPreview.style.background = 'linear-gradient(135deg, ' + color + ' 0%, ' + secColor + ' 100%)';
+  }
+}
+
+function darkenHex(hex, amount) {
+  var r = parseInt(hex.slice(1, 3), 16);
+  var g = parseInt(hex.slice(3, 5), 16);
+  var b = parseInt(hex.slice(5, 7), 16);
+  r = Math.max(0, r - amount);
+  g = Math.max(0, g - amount);
+  b = Math.max(0, b - amount);
+  return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('');
+}
+
+function updateCardPreview() {
+  const type = document.getElementById('program_type')?.value || 'stamps';
+  const cardProgress = document.getElementById('card-progress');
+  const cardStampsText = document.getElementById('card-stamps-text');
+  const dotsContainer = document.getElementById('card-dots');
+  
+  if (type === 'stamps') {
+    const stampsNeeded = document.getElementById('stamps-needed-input')?.value || 10;
+    const unitLabel = document.getElementById('unit-label-input')?.value || 'tampons';
+    
+    if (cardProgress) cardProgress.textContent = `0 / ${stampsNeeded} ${unitLabel}`;
+    if (cardStampsText) cardStampsText.textContent = `0 / ${stampsNeeded} ${unitLabel}`;
+    if (dotsContainer) {
+      dotsContainer.style.display = 'flex';
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < stampsNeeded; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-white/30 card-preview-dot';
+        dotsContainer.appendChild(dot);
+      }
+    }
+  } else if (type === 'spend') {
+    const threshold = document.getElementById('spend-threshold-input')?.value || 10000;
+    if (cardProgress) cardProgress.textContent = `0 / ${threshold} FCFA`;
+    if (cardStampsText) cardStampsText.textContent = `0 / ${threshold} FCFA`;
+    if (dotsContainer) dotsContainer.style.display = 'none';
+  } else {
+    // Points
+    if (cardProgress) cardProgress.textContent = `0 Points`;
+    if (cardStampsText) cardStampsText.textContent = `0 Points`;
+    if (dotsContainer) dotsContainer.style.display = 'none';
+  }
+}
+
+function applySignupTemplate(template) {
+  const type = template.program_type === 'visits' ? 'stamps' : template.program_type;
+  selectProgramType(type);
+  
+  if (type === 'stamps') {
+    const stampsInput = document.getElementById('stamps-needed-input');
+    const rewardNameInput = document.getElementById('reward-name-input');
+    const unitLabelInput = document.getElementById('unit-label-input');
+    
+    if (stampsInput) stampsInput.value = template.reward_threshold;
+    if (rewardNameInput) rewardNameInput.value = template.reward_description;
+    if (unitLabelInput) unitLabelInput.value = template.unit_label;
+  } else if (type === 'spend') {
+    const spendThresholdInput = document.getElementById('spend-threshold-input');
+    const rewardNameInput = document.getElementById('reward-name-input');
+    if (spendThresholdInput) spendThresholdInput.value = template.reward_threshold;
+    if (rewardNameInput) rewardNameInput.value = template.reward_description;
+  } else {
+    const rewardsList = document.getElementById('rewards-list');
+    if (rewardsList) {
+      rewardsList.innerHTML = '';
+      rewardCardCounter = 0;
+      addRewardCard(template.reward_threshold, template.reward_description);
+    }
+  }
+  
+  localStorage.setItem('tpl_primary_color', template.color_primary);
+  localStorage.setItem('tpl_secondary_color', template.color_secondary);
+  
+  document.querySelectorAll('.template-option-card').forEach(el => {
+    el.classList.remove('border-primary', 'bg-primary/5', 'shadow-sm');
+    el.classList.add('border-gray-200');
+  });
+  const selectedCard = document.getElementById('tpl-card-' + template.id);
+  if (selectedCard) {
+    selectedCard.classList.remove('border-gray-200');
+    selectedCard.classList.add('border-primary', 'bg-primary/5', 'shadow-sm');
+  }
+  updateCardPreview();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const businessNameInput = document.getElementById('business-name-input');
+  const stampsNeededInput = document.getElementById('stamps-needed-input');
+  const unitLabelInput = document.getElementById('unit-label-input');
+  const spendThresholdInput = document.getElementById('spend-threshold-input');
+  const logoInput = document.querySelector('input[type="file"]');
+  
+  if (logoInput) {
+    logoInput.addEventListener('change', function(e) {
+      if (e.target.files && e.target.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          const b64 = ev.target.result;
+          try { localStorage.setItem('yokal_logo_preview', b64); } catch(x){}
+          applyLogoPreview(b64);
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+  }
+
+  // Restore logo preview
+  try {
+    const saved = localStorage.getItem('yokal_logo_preview');
+    if (saved) applyLogoPreview(saved);
+  } catch(x) {}
+
+  function applyLogoPreview(src) {
+    const container = document.getElementById('card-logo-container');
+    if (container) {
+      container.innerHTML = '<img src="' + src + '" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;">';
+    }
+  }
+
+  if (document.getElementById('rewards-list')) {
+    addRewardCard(50, ''); // Init first card
+  }
+  
+  if (businessNameInput) {
+    businessNameInput.addEventListener('input', function() {
+      const cardValue = document.querySelector('.card-preview-value');
+      if (cardValue) cardValue.textContent = this.value || 'Votre entreprise';
+    });
+  }
+  
+  if (stampsNeededInput) {
+    stampsNeededInput.addEventListener('input', updateCardPreview);
+  }
+  if (unitLabelInput) {
+    unitLabelInput.addEventListener('input', updateCardPreview);
+  }
+  if (spendThresholdInput) {
+    spendThresholdInput.addEventListener('input', updateCardPreview);
+  }
+
+  // Initial update
+  const progType = document.getElementById('program_type')?.value || 'stamps';
+  selectProgramType(progType);
+
+  // Load signup templates
+  const signupTemplatesContainer = document.getElementById('signup-templates-container');
+  if (signupTemplatesContainer) {
+    fetch('/templates/')
+      .then(response => response.json())
+      .then(data => {
+        if (data.templates && data.templates.length > 0) {
+          signupTemplatesContainer.innerHTML = '';
+          data.templates.forEach(template => {
+            const card = document.createElement('div');
+            card.id = 'tpl-card-' + template.id;
+            card.className = 'border-2 border-gray-200 rounded-xl p-3 cursor-pointer hover:border-primary hover:bg-primary/5 transition-all template-option-card';
+            card.innerHTML = `
+              <div class="font-bold text-xs text-gray-900 mb-1">${template.name}</div>
+              <div class="text-[10px] text-gray-500 mb-2 line-clamp-2">${template.description}</div>
+              <div class="text-[9px] text-gray-400 font-semibold bg-gray-50 px-2 py-0.5 rounded inline-block">
+                ${template.reward_threshold} ${template.unit_label}
+              </div>
+            `;
+            card.onclick = function() {
+              applySignupTemplate(template);
+            };
+            signupTemplatesContainer.appendChild(card);
+          });
+        } else {
+          signupTemplatesContainer.innerHTML = '<div class="text-gray-400 text-xs">Aucun modèle disponible</div>';
+        }
+      })
+      .catch(err => {
+        signupTemplatesContainer.innerHTML = '<div class="text-red-400 text-xs">Erreur de chargement</div>';
+      });
+  }
+
+  // Pre-fill colors in step 4
+  {% if step == '4' %}
+  const tplPrimary = localStorage.getItem('tpl_primary_color');
+  const sessionPrimary = "{{ wizard_data.design.primary_color }}";
+  if (tplPrimary && !sessionPrimary) {
+    selectColor(tplPrimary);
+  } else {
+    selectColor(sessionPrimary || '#3b82f6');
+  }
+  // Clear colors storage on step 4 submit
+  document.querySelector('form')?.addEventListener('submit', function() {
+    localStorage.removeItem('tpl_primary_color');
+    localStorage.removeItem('tpl_secondary_color');
+  });
+  {% endif %}
+});
+
+let rewardCardCounter = 0;
+
+function addRewardCard(defaultPts = '', defaultDesc = '') {
+  rewardCardCounter++;
+  const container = document.getElementById('rewards-list');
+  const cardId = `reward-card-${rewardCardCounter}`;
+  
+  const cardHtml = `
+    <div id="${cardId}" class="p-4 bg-gray-50 border border-gray-200 rounded-xl relative transition-all">
+      <button type="button" onclick="removeRewardCard('${cardId}')" class="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+      <div class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Récompense #${rewardCardCounter}</div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="sm:col-span-1">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1">Points requis</label>
+          <input type="number" name="dyn_reward_points[]" value="${defaultPts}" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 text-sm outline-none" placeholder="Ex: 50" oninput="updatePreviewRewards()">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-[11px] font-semibold text-gray-500 mb-1">Description</label>
+          <input type="text" name="dyn_reward_descs[]" value="${defaultDesc}" class="w-full px-3 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-2 focus:ring-primary/10 text-sm outline-none" placeholder="Ex: Un café offert" oninput="updatePreviewRewards()">
+        </div>
+      </div>
+    </div>
+  `;
+  container.insertAdjacentHTML('beforeend', cardHtml);
+  updatePreviewRewards();
+}
+
+function removeRewardCard(id) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.remove();
+    updatePreviewRewards();
+  }
+}
+
+function updatePreviewRewards() {
+  const previewContainer = document.getElementById('preview-dynamic-rewards');
+  if (!previewContainer) return;
+  
+  previewContainer.innerHTML = '';
+  
+  const pointsInputs = document.querySelectorAll('input[name="dyn_reward_points[]"]');
+  const descInputs = document.querySelectorAll('input[name="dyn_reward_descs[]"]');
+  
+  pointsInputs.forEach((input, index) => {
+    const pts = input.value;
+    const desc = descInputs[index] ? descInputs[index].value : '';
+    
+    if (pts || desc) {
+      previewContainer.innerHTML += `<div class="flex items-center gap-3 py-2 border-b border-white/10 last:border-0"><span class="bg-white/20 px-2 py-1 rounded text-xs font-semibold">${pts || '0'} pts</span><span class="text-sm">${desc || 'Récompense...'}</span></div>`;
+    }
+  });
+}
+</script>
+{% endblock %}

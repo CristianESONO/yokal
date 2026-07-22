@@ -1,0 +1,1223 @@
+{% extends 'dashboard/base.html' %}
+{% block dash_content %}
+
+<!-- Header -->
+<div class="mb-8">
+  <div class="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+    <span>Dashboard</span>
+    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span class="text-gray-900">Paramètres</span>
+  </div>
+  <h1 class="text-3xl font-black text-gray-900 mb-1">Paramètres</h1>
+  <p class="text-sm text-gray-500 font-medium">Personnalisez votre programme de fidélité</p>
+</div>
+
+<!-- Tabs Navigation -->
+<div class="flex items-center gap-1 mb-6 md:mb-8 overflow-x-auto pb-2 -mx-4 px-4 md:-mx-2 md:px-2 no-scrollbar">
+  <button onclick="switchTab('commerce')" id="tab-commerce" class="tab-btn active px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Commerce
+  </button>
+  <button onclick="switchTab('programme')" id="tab-programme" class="tab-btn px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Programme
+  </button>
+  <button onclick="switchTab('design')" id="tab-design" class="tab-btn px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Design
+  </button>
+  <button onclick="switchTab('partage')" id="tab-partage" class="tab-btn px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Partage
+  </button>
+  <button onclick="switchTab('locations')" id="tab-locations" class="tab-btn px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Points de vente
+  </button>
+  <button onclick="switchTab('avis')" id="tab-avis" class="tab-btn px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Avis
+  </button>
+  <button onclick="switchTab('api')" id="tab-api" class="tab-btn px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    API
+  </button>
+  <button onclick="switchTab('whatsapp')" id="tab-whatsapp" class="tab-btn px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.022-.014-.516-.251-.621-.29-.105-.038-.18-.057-.257.057-.077.115-.297.373-.364.448-.066.076-.132.086-.247.028-.115-.057-.485-.179-.924-.57-.341-.304-.57-.68-.637-.796-.066-.115-.007-.177.05-.235.052-.052.115-.135.172-.201.057-.066.076-.115.114-.191.037-.076.02-.144-.01-.201-.03-.058-.257-.62-.352-.849-.093-.222-.186-.192-.257-.195-.066-.003-.141-.003-.217-.003-.076 0-.2-.029-.304.086-.105.115-.401.391-.401.954 0 .563.409 1.108.466 1.186.057.077.805 1.23 1.95 1.724.272.118.485.188.65.24.273.087.521.074.717.045.218-.032.672-.275.766-.54.095-.266.095-.494.066-.54-.029-.046-.105-.077-.221-.132zm-5.467 4.142h-.005c-1.07 0-2.12-.288-3.04-.83l-.218-.13-2.26.592.602-2.203-.142-.226a6.623 6.623 0 01-1.015-3.53c0-3.66 2.977-6.638 6.64-6.638 1.776 0 3.444.692 4.698 1.948a6.593 6.593 0 011.94 4.695c0 3.662-2.98 6.64-6.642 6.64zm8.504-12.784A8.966 8.966 0 0012.003 3c-4.957 0-8.99 4.035-8.993 8.996a8.946 8.946 0 001.215 4.549L3 21l4.588-1.205A8.933 8.933 0 0012.003 21c4.957 0 8.992-4.035 8.993-8.998a8.964 8.966 0 00-2.528-6.38z"/></svg>
+    WhatsApp
+  </button>
+  <button onclick="switchTab('equipe')" id="tab-equipe" class="tab-btn px-4 md:px-5 py-2.5 rounded-xl text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2">
+    <svg class="w-3.5 h-3.5 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Équipe
+  </button>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+  <!-- Left Side: Form Content -->
+  <div class="lg:col-span-7">
+    <div id="content-commerce" class="tab-content">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">Informations du commerce</h2>
+          <p class="text-xs text-gray-400 font-medium">Nom et identité visuelle</p>
+        </div>
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="commerce">
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Nom du commerce</label>
+            <input type="text" name="business_name" id="input-biz-name" value="{{ user.merchant_profile.business_name }}" 
+                   oninput="updateCardPreview()"
+                   class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Identifiant unique (slug)</label>
+            <div class="relative">
+              <input type="text" value="{{ user.merchant_profile.business_name|slugify }}" 
+                     class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 outline-none">
+            </div>
+            <p class="mt-2 text-[10px] text-gray-400 font-medium">Votre lien public : <a href="{% url 'loyalty:public_merchant' merchant_slug=user.merchant_profile.slug %}" target="_blank" class="text-primary font-bold hover:underline">{{ request.scheme }}://{{ request.get_host }}/m/{{ user.merchant_profile.slug }}/</a></p>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Logo</label>
+            <div class="flex flex-col sm:items-center sm:flex-row gap-6">
+              <div class="w-20 h-20 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center overflow-hidden flex-shrink-0 mx-auto sm:mx-0">
+                {% if user.merchant_profile.logo %}
+                  <img src="{{ user.merchant_profile.logo.url }}" class="w-full h-full object-contain bg-white">
+                {% else %}
+                  <span class="text-2xl text-gray-300 font-black">{{ user.merchant_profile.business_name|first }}</span>
+                {% endif %}
+              </div>
+              <div class="text-center sm:text-left">
+                <div class="flex flex-wrap justify-center sm:justify-start gap-2 mb-2">
+                    <input type="file"
+                        id="logo-upload"
+                        name="logo"
+                        accept="image/*"
+                        class="hidden"
+                        onchange="previewLogo(event)">
+
+                    <button type="button"
+                            onclick="document.getElementById('logo-upload').click();"
+                            class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-900 text-[10px] md:text-xs font-bold rounded-xl transition-all">
+                        Modifier
+                    </button>
+
+                    <button type="submit"
+                            name="delete_logo"
+                            value="1"
+                            class="px-4 py-2 text-red-500 hover:bg-red-50 text-[10px] md:text-xs font-bold rounded-xl transition-all">
+                        Supprimer
+                    </button>
+                </div>
+                <p class="text-[9px] md:text-[10px] text-gray-400 font-medium tracking-tight">Format JPG, PNG. Max 5MB.</p>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-gray-50 flex justify-end">
+            <button type="submit" class="px-8 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="content-programme" class="tab-content hidden">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">Programme de fidélité</h2>
+          <p class="text-xs text-gray-400 font-medium">Type et récompense</p>
+        </div>
+        <form method="post" class="space-y-8">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="programme">
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">Type de programme</label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <button type="button" class="p-6 rounded-2xl border-2 border-primary bg-primary/5 text-left transition-all">
+                <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="font-bold text-gray-900 text-sm mb-1">Tampons</div>
+                <p class="text-[10px] text-gray-400 font-medium leading-relaxed">Fixé à {{ program.reward_threshold|default:"10" }}</p>
+              </button>
+              <button type="button" class="p-6 rounded-2xl border-2 border-gray-100 hover:border-gray-200 bg-white text-left transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-gray-50 group-hover:bg-gray-100 text-gray-400 flex items-center justify-center mb-4">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <div class="font-bold text-gray-400 text-sm mb-1 group-hover:text-gray-900">Points</div>
+                <p class="text-[10px] text-gray-400 font-medium leading-relaxed italic">Cumul progressif (Arrive bientôt)</p>
+              </button>
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Nombre de tampons</label>
+            <input type="text" value="{{ program.reward_threshold|default:'10' }}" readonly
+                   class="w-full bg-gray-100 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-500 cursor-not-allowed">
+            <p class="mt-2 text-[10px] text-gray-400 font-medium">Le mode Tampons est bloqué à {{ program.reward_threshold|default:"10" }} pour le moment.</p>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">Devise du programme</label>
+            <input type="hidden" name="currency" id="currency-input" value="{{ program.currency|default:'XOF' }}">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {% for code, label in currency_choices %}
+              <button type="button"
+                      onclick="setProgramCurrency('{{ code }}')"
+                      class="currency-choice-btn p-4 rounded-2xl border-2 text-left transition-all {% if program.currency|default:'XOF' == code %}border-primary bg-primary/5{% else %}border-gray-100 hover:border-gray-200 bg-white{% endif %}"
+                      data-currency="{{ code }}">
+                <div class="font-bold text-gray-900 text-sm mb-1">{{ label }}</div>
+                <p class="text-[10px] text-gray-400 font-medium">
+                  {% if code == 'XOF' %}Symbole : FCFA{% elif code == 'EUR' %}Symbole : €{% elif code == 'USD' %}Symbole : ${% endif %}
+                </p>
+              </button>
+              {% endfor %}
+            </div>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Description de la récompense</label>
+            <input type="text" name="reward_description" id="input-reward-desc" value="{{ program.reward_description }}"
+                   oninput="updateCardPreview()"
+                   placeholder="Ex: 1 café offert, -10% sur le prochain achat..."
+                   class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Date de fin du programme</label>
+            <input type="date" name="ends_at" value="{% if program.ends_at %}{{ program.ends_at|date:'Y-m-d' }}{% endif %}"
+                   class="w-full max-w-xs bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+            <p class="mt-2 text-[10px] text-gray-400 font-medium leading-relaxed">
+              À cette date le programme sera désactivé automatiquement. Les cartes et la base clients sont conservées.
+              {% if program.ends_at and not program.active %}
+              <span class="block mt-1 text-amber-600 font-bold">Ce programme est expiré depuis le {{ program.ends_at|date:"d/m/Y" }}.</span>
+              {% elif program.ends_at %}
+              <span class="block mt-1 text-emerald-600">Fin prévue le {{ program.ends_at|date:"d/m/Y" }}.</span>
+              {% endif %}
+            </p>
+          </div>
+          <div class="pt-4 border-t border-gray-50 flex justify-end">
+            <button type="submit" class="px-8 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="content-design" class="tab-content hidden">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">Design de la carte</h2>
+          <p class="text-xs text-gray-400 font-medium">Couleur principale</p>
+        </div>
+        <form method="post" class="space-y-8">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="design">
+          <input type="hidden" name="color_primary" id="hidden-color-input" value="{{ program.color_primary|default:'#3b82f6' }}">
+          <input type="hidden" name="color_secondary" id="hidden-secondary-input" value="{{ program.color_secondary|default:program.color_primary|default:'#3b82f6' }}">
+          
+          <div class="space-y-8">
+            <!-- Codes couleur hexadécimaux -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Couleur principale</label>
+                <div class="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3">
+                  <input type="color" id="color-picker" value="{{ program.color_primary|default:'#3b82f6' }}" oninput="setAccentColor(this.value)" class="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none shrink-0">
+                  <div class="flex-1">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase">Code hex</span>
+                    <input type="text" id="color-hex" value="{{ program.color_primary|default:'#3b82f6' }}" oninput="setAccentColor(this.value)" placeholder="#3B82F6" maxlength="7" class="w-full bg-transparent text-base font-mono font-bold text-gray-900 outline-none uppercase">
+                  </div>
+                </div>
+              </div>
+              <div id="secondary-color-section" class="{% if program.color_primary == program.color_secondary %}hidden{% endif %}">
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Couleur secondaire</label>
+                <div class="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3">
+                  <input type="color" id="secondary-color-picker" value="{{ program.color_secondary|default:program.color_primary|default:'#3b82f6' }}" oninput="setSecondaryColor(this.value)" class="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none shrink-0">
+                  <div class="flex-1">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase">Code hex</span>
+                    <input type="text" id="secondary-color-hex" value="{{ program.color_secondary|default:program.color_primary|default:'#3b82f6' }}" oninput="setSecondaryColor(this.value)" placeholder="#2563EB" maxlength="7" class="w-full bg-transparent text-base font-mono font-bold text-gray-900 outline-none uppercase">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contrôles de dégradé -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Direction du dégradé</label>
+                <select name="gradient_direction" id="gradient-direction" class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                  <option value="135deg" {% if program.gradient_direction|default:'135deg' == '135deg' %}selected{% endif %}>Diagonal (↘)</option>
+                  <option value="90deg" {% if program.gradient_direction|default:'135deg' == '90deg' %}selected{% endif %}>Horizontal (→)</option>
+                  <option value="180deg" {% if program.gradient_direction|default:'135deg' == '180deg' %}selected{% endif %}>Vertical (↓)</option>
+                  <option value="45deg" {% if program.gradient_direction|default:'135deg' == '45deg' %}selected{% endif %}>Diagonal inverse (↗)</option>
+                  <option value="radial" {% if program.gradient_direction|default:'135deg' == 'radial' %}selected{% endif %}>Radial (○)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Intensité du dégradé</label>
+                <input type="range" name="gradient_intensity" id="gradient-intensity" min="0" max="100" value="{{ program.gradient_intensity|default:50 }}" 
+                       class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-primary"
+                       oninput="document.getElementById('intensity-value').textContent = this.value + '%'">
+                <div class="text-[10px] text-gray-400 font-medium mt-2">Intensité : <span id="intensity-value">{{ program.gradient_intensity|default:50 }}</span>%</div>
+              </div>
+            </div>
+
+            <!-- Contrôles de typographie -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Police du titre</label>
+                <select name="font_family" id="font-family" class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                  <option value="sans-serif" {% if program.font_family|default:'sans-serif' == 'sans-serif' %}selected{% endif %}>Sans-serif</option>
+                  <option value="serif" {% if program.font_family|default:'sans-serif' == 'serif' %}selected{% endif %}>Serif</option>
+                  <option value="monospace" {% if program.font_family|default:'sans-serif' == 'monospace' %}selected{% endif %}>Monospace</option>
+                  <option value="cursive" {% if program.font_family|default:'sans-serif' == 'cursive' %}selected{% endif %}>Cursive</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Taille du texte</label>
+                <select name="font_size" id="font-size" class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                  <option value="small" {% if program.font_size|default:'medium' == 'small' %}selected{% endif %}>Petit</option>
+                  <option value="medium" {% if program.font_size|default:'medium' == 'medium' %}selected{% endif %}>Moyen</option>
+                  <option value="large" {% if program.font_size|default:'medium' == 'large' %}selected{% endif %}>Grand</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-3">Style du texte</label>
+                <select name="font_style" id="font-style" class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+                  <option value="normal" {% if program.font_style|default:'normal' == 'normal' %}selected{% endif %}>Normal</option>
+                  <option value="italic" {% if program.font_style|default:'normal' == 'italic' %}selected{% endif %}>Italique</option>
+                  <option value="bold" {% if program.font_style|default:'normal' == 'bold' %}selected{% endif %}>Gras</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Option couleur unie -->
+            <div class="flex items-center justify-between p-6 bg-gray-50 rounded-2xl border border-gray-100">
+              <div>
+                <div class="font-bold text-gray-900 text-sm mb-1">Utiliser une couleur unie</div>
+                <p class="text-[10px] text-gray-400 font-medium tracking-tight">Applique la même couleur partout sur la carte (pas de dégradé)</p>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="color_solid" id="color-solid-toggle" class="sr-only peer" 
+                       {% if program.color_primary == program.color_secondary %}checked{% endif %}
+                       onchange="toggleSecondaryColor(this.checked)">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+              </label>
+            </div>
+
+            <div class="pt-8 border-t border-gray-50">
+              <!-- Mode Design Avancé -->
+              <div class="flex items-center justify-between p-6 bg-gray-900 rounded-3xl shadow-xl shadow-gray-900/10 mb-6">
+                <div>
+                  <div class="font-bold text-white text-sm mb-1 flex items-center gap-2">
+                    <svg class="w-4 h-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Mode Design Avancé (HTML)
+                  </div>
+                  <p class="text-[10px] text-gray-400 font-medium">Créez votre propre structure de carte avec du code personnalisé</p>
+                </div>
+                <label class="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" name="use_custom_design" id="custom-design-toggle" class="sr-only peer" 
+                         {% if program.use_custom_design %}checked{% endif %}
+                         onchange="toggleCustomDesign(this.checked)">
+                  <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                </label>
+              </div>
+
+              <div id="custom-html-section" class="{% if not program.use_custom_design %}hidden{% endif %} space-y-4 animate-in fade-in slide-in-from-top-2">
+                <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+                  <div class="mb-4 flex items-center justify-between">
+                    <label class="text-[11px] font-bold text-gray-400 uppercase tracking-widest">Code HTML/CSS personnalisé</label>
+                    <div class="text-[10px] text-primary font-bold bg-primary/5 px-2 py-1 rounded-lg">Variables 100% dynamiques</div>
+                  </div>
+                  
+                  <textarea name="custom_html" id="custom-html-input" rows="10" 
+                            oninput="updateCardBackground()"
+                            placeholder="<div style='background: #000; color: #fff;'>...</div>"
+                            class="w-full bg-white border border-gray-100 rounded-xl p-4 text-xs font-mono text-gray-700 outline-none focus:ring-2 focus:ring-primary/10 transition-all mb-4">{{ program.custom_html }}</textarea>
+
+                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <div class="flex flex-col p-2 bg-white rounded-lg border border-gray-100">
+                      <code class="text-primary text-[10px] font-bold mb-1">{name}</code>
+                      <span class="text-[9px] text-gray-400 uppercase">Nom du client</span>
+                    </div>
+                    <div class="flex flex-col p-2 bg-white rounded-lg border border-gray-100">
+                      <code class="text-primary text-[10px] font-bold mb-1">{balance}</code>
+                      <span class="text-[9px] text-gray-400 uppercase">Tampons actuels</span>
+                    </div>
+                    <div class="flex flex-col p-2 bg-white rounded-lg border border-gray-100">
+                      <code class="text-primary text-[10px] font-bold mb-1">{total}</code>
+                      <span class="text-[9px] text-gray-400 uppercase">Points cumulés</span>
+                    </div>
+                    <div class="flex flex-col p-2 bg-white rounded-lg border border-gray-100">
+                      <code class="text-primary text-[10px] font-bold mb-1">{logo}</code>
+                      <span class="text-[9px] text-gray-400 uppercase">URL du logo</span>
+                    </div>
+                    <div class="flex flex-col p-2 bg-white rounded-lg border border-gray-100">
+                      <code class="text-primary text-[10px] font-bold mb-1">{phone}</code>
+                      <span class="text-[9px] text-gray-400 uppercase">N° de Téléphone</span>
+                    </div>
+                  </div>
+                  <!-- Layered approach implemented below -->
+                </div>
+                <div class="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex items-start gap-3">
+                  <svg class="w-4 h-4 text-amber-500 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <p class="text-[10px] text-amber-700 font-medium leading-relaxed">
+                    <strong>Attention :</strong> Le mode avancé désactive le design standard. Assurez-vous d'inclure toutes les informations nécessaires dans votre HTML.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="pt-4 border-t border-gray-50 flex justify-end">
+            <button type="submit" class="px-8 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="content-partage" class="tab-content hidden">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8 space-y-8">
+        <div>
+          <h2 class="text-xl font-bold text-gray-900 mb-1">Lien global d'inscription</h2>
+          <p class="text-xs text-gray-400 font-medium">Un seul lien pour tous vos programmes — le client choisit ceux auxquels il adhère.</p>
+        </div>
+        {% if merchant.slug %}
+        <div class="flex flex-col sm:flex-row gap-3">
+          <div class="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 flex items-center justify-between group">
+            <span class="share-link-text truncate pr-4">{{ request.scheme }}://{{ request.get_host }}{% url 'loyalty:merchant_enroll' merchant_slug=merchant.slug %}</span>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="copyShareLink()" class="px-5 py-4 bg-primary text-white font-bold rounded-2xl transition-all flex items-center gap-2">
+              Copier
+            </button>
+            <button type="button" onclick="openQrModal()" class="px-5 py-4 bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold rounded-2xl transition-all flex items-center gap-2">
+              QR Code
+            </button>
+          </div>
+        </div>
+        {% else %}
+        <p class="text-sm text-gray-400 font-medium">Configurez votre commerce pour obtenir un lien de partage.</p>
+        {% endif %}
+
+        {% if program %}
+        <div class="pt-6 border-t border-gray-100">
+          <h3 class="text-sm font-black text-gray-900 mb-1">Lien programme « {{ program.name }} »</h3>
+          <p class="text-xs text-gray-400 font-medium mb-4">Lien direct vers un programme spécifique (rétrocompatibilité).</p>
+          <div class="bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-bold text-gray-600 break-all">
+            {{ request.scheme }}://{{ request.get_host }}{% url 'loyalty:self_enroll' program_id=program.id %}
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="pt-6 border-t border-gray-100">
+          <h3 class="text-sm font-black text-gray-900 mb-1">Validation des adhésions</h3>
+          <p class="text-xs text-gray-400 font-medium mb-4">Exiger votre approbation avant qu'un client puisse utiliser sa carte.</p>
+          <form method="post" class="flex items-center justify-between p-5 bg-gray-50 rounded-2xl border border-gray-100">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="membership">
+            <div>
+              <div class="font-bold text-gray-900 text-sm">Validation manuelle</div>
+              <p class="text-[10px] text-gray-400 font-medium mt-1">Les nouvelles adhésions passent en « en attente » jusqu'à votre accord.</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" name="require_membership_approval" class="sr-only peer" {% if merchant.require_membership_approval %}checked{% endif %} onchange="this.form.submit()">
+              <div class="w-12 h-6 bg-gray-200 rounded-full peer peer-checked:bg-primary transition-all"></div>
+              <div class="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow peer-checked:translate-x-6 transition-transform"></div>
+            </label>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="content-avis" class="tab-content hidden">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">Avis Google</h2>
+          <p class="text-xs text-gray-400 font-medium">Demandez des avis à vos clients fidèles</p>
+        </div>
+        <div class="flex items-center justify-between p-6 bg-gray-50 rounded-[2rem] border border-gray-100 mb-8">
+          <div>
+            <div class="font-bold text-gray-900 text-sm mb-1">Activer les demandes d'avis</div>
+            <p class="text-[10px] text-gray-400 font-medium leading-tight">Envoie un email automatique quand un client atteint la récompense</p>
+          </div>
+          <div class="w-12 h-6 bg-gray-200 rounded-full relative cursor-pointer shadow-inner">
+            <div class="w-5 h-5 bg-white rounded-full absolute top-0.5 left-0.5 shadow-md"></div>
+          </div>
+        </div>
+        <div class="bg-blue-50/50 rounded-2xl p-6 border border-blue-100">
+          <h4 class="text-xs font-bold text-blue-800 mb-4 uppercase tracking-widest flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Comment ça marche ?
+          </h4>
+          <ol class="space-y-4">
+            <li class="flex gap-4">
+              <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center flex-shrink-0">1</span>
+              <p class="text-[11px] text-blue-700/80 font-medium leading-relaxed">Le client atteint 10 tampons</p>
+            </li>
+            <li class="flex gap-4">
+              <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center flex-shrink-0">2</span>
+              <p class="text-[11px] text-blue-700/80 font-medium leading-relaxed">Il reçoit une notification sur son wallet avec votre récompense</p>
+            </li>
+            <li class="flex gap-4">
+              <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-700 font-bold text-xs flex items-center justify-center flex-shrink-0">3</span>
+              <p class="text-[11px] text-blue-700/80 font-medium leading-relaxed">Il reçoit un email l'invitant à laisser un avis Google sur votre fiche établissement</p>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div id="content-api" class="tab-content hidden">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">API publique</h2>
+          <p class="text-xs text-gray-400 font-medium">Intégrez Yokalma à votre caisse, CRM ou outils internes</p>
+        </div>
+
+        {% if user.merchant_profile.api_key and user.merchant_profile.api_key_active %}
+        <div class="mb-6">
+          <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">Votre clé API</label>
+          <div class="flex gap-2">
+            <input type="text" readonly value="{{ user.merchant_profile.api_key }}" id="api-key-field"
+                   class="flex-1 bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-xs font-mono text-gray-700 outline-none">
+            <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('api-key-field').value)"
+                    class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-xs font-bold text-gray-600 transition-colors">
+              Copier
+            </button>
+          </div>
+          {% if user.merchant_profile.api_key_last_used %}
+          <p class="mt-2 text-[10px] text-gray-400">Dernière utilisation : {{ user.merchant_profile.api_key_last_used|date:"d/m/Y H:i" }}</p>
+          {% endif %}
+        </div>
+        <form method="post" class="mb-8">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="api_revoke">
+          <button type="submit" class="px-5 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl transition-colors">
+            Révoquer la clé
+          </button>
+        </form>
+        {% else %}
+        <form method="post" class="mb-8">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="api_generate">
+          <button type="submit" class="px-6 py-3 bg-primary hover:bg-primary-hover text-white text-sm font-bold rounded-xl transition-colors">
+            Générer une clé API
+          </button>
+        </form>
+        {% endif %}
+
+        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100 space-y-4">
+          <h4 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Endpoints disponibles</h4>
+          <div class="space-y-2 text-xs font-mono text-gray-600">
+            <div><span class="text-emerald-600 font-bold">GET</span> /api/v1/programs/</div>
+            <div><span class="text-emerald-600 font-bold">GET</span> /api/v1/customers/?program_id=1</div>
+            <div><span class="text-emerald-600 font-bold">GET</span> /api/v1/customers/&lt;token&gt;/</div>
+            <div><span class="text-blue-600 font-bold">POST</span> /api/v1/customers/create/</div>
+            <div><span class="text-blue-600 font-bold">POST</span> /api/v1/customers/&lt;token&gt;/stamp/</div>
+            <div><span class="text-blue-600 font-bold">POST</span> /api/v1/rewards/&lt;id&gt;/redeem/</div>
+          </div>
+          <p class="text-[11px] text-gray-500 pt-2 border-t border-gray-200">
+            Authentification : <code class="bg-white px-1.5 py-0.5 rounded">Authorization: Bearer &lt;clé&gt;</code>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div id="content-whatsapp" class="tab-content hidden">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">WhatsApp Business</h2>
+          <p class="text-xs text-gray-400 font-medium">Connectez votre propre numéro pour automatiser vos notifications.</p>
+        </div>
+
+        {% if user.merchant_profile.whatsapp_connected %}
+        <!-- ✅ Connected State -->
+        <div class="space-y-6">
+          <div class="p-6 rounded-2xl border-2 border-green-500 bg-green-50/30 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-10 h-10 rounded-xl bg-green-500 text-white flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div>
+                <div class="font-bold text-gray-900 text-sm mb-0.5">WhatsApp Connecté</div>
+                <div class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">+{{ user.merchant_profile.phone }}</div>
+              </div>
+            </div>
+            <span class="px-3 py-1 bg-green-500 text-white text-[10px] font-black rounded-lg uppercase">Actif</span>
+          </div>
+
+          <!-- Toggle Notifications -->
+          <div class="flex items-center justify-between p-6 bg-gray-50 rounded-2xl border border-gray-100">
+            <div>
+              <div class="font-bold text-gray-900 text-sm mb-1">Notifications automatiques</div>
+              <p class="text-[10px] text-gray-400 font-medium">Message automatique après chaque ajout de tampon</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="whatsapp-toggle" class="sr-only peer" {% if user.merchant_profile.whatsapp_enabled %}checked{% endif %} onchange="toggleNotifications(this.checked)">
+              <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+            </label>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button onclick="startConnection()" type="button" class="p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-gray-100 text-gray-700 font-bold text-xs transition-all flex items-center justify-center gap-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Reconnecter
+            </button>
+            <form method="post" action="{% url 'accounts:whatsapp_disconnect' %}">
+              {% csrf_token %}
+              <button type="submit" class="w-full p-4 rounded-xl border border-red-100 bg-red-50 text-red-600 font-bold text-xs transition-all">
+                Déconnecter
+              </button>
+            </form>
+          </div>
+        </div>
+
+        {% else %}
+        <!-- ❌ Not Connected State -->
+        <div id="wa-connect-section" class="space-y-6">
+          <div class="p-4 bg-gray-50 border border-gray-100 rounded-2xl flex items-center gap-3">
+             <div class="w-10 h-10 rounded-xl bg-blue-50/50 border border-blue-100 flex items-center justify-center text-blue-500">
+               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+             </div>
+             <div>
+               <div class="text-[10px] font-bold text-blue-600 uppercase tracking-widest mb-0.5">Numéro du profil</div>
+               <div class="text-base font-black text-gray-900">+{{ user.merchant_profile.phone }}</div>
+             </div>
+             <a href="{% url 'dashboard:account' %}?tab=profil" class="ml-auto px-4 py-2 bg-white border border-gray-100 text-gray-900 text-[10px] font-bold rounded-xl hover:bg-gray-50 transition-all">Modifier</a>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- QR Mode Card -->
+            <button onclick="startConnection()" type="button" class="p-6 rounded-2xl border-2 border-primary bg-primary/5 text-left transition-all group">
+              <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="font-bold text-gray-900 text-sm mb-1">Via QR Code</div>
+              <p class="text-[10px] text-gray-400 font-medium leading-relaxed">Pour une connexion rapide sur ordinateur</p>
+            </button>
+
+            <!-- Pairing Mode Card -->
+            <button onclick="startPairingCode()" type="button" class="p-6 rounded-2xl border-2 border-gray-100 hover:border-gray-200 bg-white text-left transition-all group">
+              <div class="w-10 h-10 rounded-xl bg-gray-50 group-hover:bg-gray-100 text-gray-400 flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <div class="font-bold text-gray-400 group-hover:text-gray-900 text-sm mb-1">Sur Mobile (Code)</div>
+              <p class="text-[10px] text-gray-400 font-medium leading-relaxed">Utiliser un code d'appairage à 8 chiffres</p>
+            </button>
+          </div>
+        </div>
+
+        <!-- Connection View -->
+        <div id="wa-qr-section" class="hidden mt-8 text-center bg-gray-50/50 rounded-3xl p-8 border border-gray-50">
+            <div id="wa-status-bar" class="p-3 bg-white border border-gray-100 rounded-xl flex items-center justify-center gap-2 mb-6 max-w-xs mx-auto">
+              <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+              <span class="text-[10px] text-blue-700 font-bold uppercase tracking-wider" id="wa-status-text">Initialisation...</span>
+            </div>
+
+            <div id="wa-qr-container" class="relative inline-block p-6 bg-white border border-gray-100 rounded-3xl shadow-xl shadow-gray-200/20 min-h-[240px] min-w-[240px]">
+                <div id="wa-qr-loading" class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mb-2"></div>
+                    <p class="text-[10px] text-gray-400 font-bold">Chargement...</p>
+                </div>
+                <img id="wa-qr-image" class="hidden w-48 h-48 mx-auto rounded-xl" src="" alt="QR">
+
+                <div id="wa-pairing-container" class="hidden py-6 px-2 w-full max-w-full overflow-hidden">
+                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-4">Code d'appairage</div>
+                    
+                    <div class="relative w-full max-w-full">
+                        <div id="wa-pairing-code" class="text-xl sm:text-3xl font-black text-primary tracking-normal sm:tracking-[0.2em] font-mono py-4 sm:py-5 px-4 sm:px-6 bg-primary/5 rounded-2xl border-2 border-primary/10 inline-block shadow-inner max-w-full break-all"></div>
+                        
+                        <button onclick="copyPairingCode(event)" class="mt-4 flex items-center gap-2 mx-auto px-4 py-2 bg-white border border-gray-100 rounded-xl text-[10px] font-bold text-gray-500 hover:bg-gray-50 transition-all shadow-sm">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Copier le code
+                        </button>
+                    </div>
+
+                    <div class="mt-8 space-y-4 text-left max-w-[280px] mx-auto px-4">
+                        <div class="flex items-start gap-3">
+                            <span class="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">1</span>
+                            <p class="text-[10px] font-bold text-gray-500 leading-tight">Ouvrez WhatsApp > Réglages > Appareils liés > Lier un appareil</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">2</span>
+                            <p class="text-[10px] font-bold text-gray-500 leading-tight">Cliquez sur <span class="text-primary">"Lier avec le numéro de téléphone plutôt"</span> en bas de votre écran</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="w-5 h-5 rounded-md bg-primary text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0 mt-0.5">3</span>
+                            <p class="text-[10px] font-bold text-gray-500 leading-tight">Saisissez le code ci-dessus sur votre téléphone</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-6">
+                <button onclick="location.reload()" class="text-[10px] font-bold text-gray-400 hover:text-gray-600 px-6 py-2 bg-white rounded-full border border-gray-100">Annuler</button>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- How it works -->
+        <div class="mt-8 bg-gray-50 rounded-2xl p-5 border border-gray-100">
+          <h4 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest mb-4">Comment ça marche ?</h4>
+          <ol class="space-y-3">
+            <li class="flex items-start gap-3">
+              <span class="w-5 h-5 rounded-md bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+              <p class="text-[11px] text-gray-500 font-medium leading-relaxed">Cliquez sur "Connecter mon WhatsApp" pour générer un QR code</p>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-5 h-5 rounded-md bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+              <p class="text-[11px] text-gray-500 font-medium leading-relaxed">Scannez-le avec votre téléphone via WhatsApp → Appareils liés</p>
+            </li>
+            <li class="flex items-start gap-3">
+              <span class="w-5 h-5 rounded-md bg-primary/10 text-primary font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+              <p class="text-[11px] text-gray-500 font-medium leading-relaxed">C'est tout ! Vos clients recevront désormais les notifications depuis votre numéro</p>
+            </li>
+          </ol>
+        </div>
+
+        <!-- Advanced Configuration -->
+        <div class="mt-8 pt-8 border-t border-gray-100">
+          <button onclick="document.getElementById('wa-advanced-config').classList.toggle('hidden')" class="text-[10px] font-bold text-gray-400 hover:text-gray-600 flex items-center gap-2 uppercase tracking-widest">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37a1.724 1.724 0 002.572-1.065z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Configuration Avancée
+          </button>
+          
+          <div id="wa-advanced-config" class="hidden mt-6 space-y-6">
+            <form method="post" action="{% url 'accounts:update_whatsapp_settings' %}">
+              {% csrf_token %}
+              <div class="grid grid-cols-1 gap-6">
+                <div>
+                  <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">URL du Gateway</label>
+                  <input type="url" name="whatsapp_api_url" value="{{ user.merchant_profile.whatsapp_api_url|default:'' }}" placeholder="http://195.35.2.116:8095" class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-gray-900 text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Clé API (Token Global)</label>
+                  <input type="text" name="whatsapp_api_key" value="{{ user.merchant_profile.whatsapp_api_key|default:'' }}" placeholder="yokalma_token_..." class="w-full px-4 py-3 bg-gray-50 border border-gray-100 rounded-xl text-gray-900 text-xs focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">ID Instance Actuelle</label>
+                  <input type="text" readonly value="{{ user.merchant_profile.whatsapp_instance_id|default:'Non généré' }}" class="w-full px-4 py-3 bg-gray-100 border border-gray-100 rounded-xl text-gray-400 text-xs cursor-not-allowed">
+                </div>
+                <button type="submit" class="w-full py-4 bg-gray-900 text-white text-xs font-bold rounded-xl hover:bg-black transition-all">
+                  Enregistrer les paramètres
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="content-equipe" class="tab-content hidden">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div class="mb-8">
+          <h2 class="text-xl font-bold text-gray-900 mb-1">Équipe</h2>
+          <p class="text-xs text-gray-400 font-medium">Gérez les accès de votre équipe</p>
+        </div>
+
+        <!-- Invite Form -->
+        <form method="post" action="{% url 'accounts:invite_team' %}" class="mb-8">
+          {% csrf_token %}
+          <div class="flex gap-3">
+            <input type="email" name="email" required placeholder="email@exemple.com"
+                   class="flex-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+            <select name="role" class="bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-bold text-gray-900 outline-none focus:ring-2 focus:ring-primary/10 transition-all">
+              <option value="member">💳 Membre</option>
+              <option value="admin">👑 Administrateur</option>
+            </select>
+            <button type="submit" class="px-6 py-3 bg-primary text-white font-bold rounded-xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+              Inviter
+            </button>
+          </div>
+        </form>
+
+        <!-- Team Members List -->
+        <div class="space-y-3">
+          {% for member in team_members %}
+          <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm">
+                {{ member.email|first|upper }}
+              </div>
+              <div>
+                <div class="font-bold text-gray-900 text-sm">{{ member.email }}</div>
+                <div class="text-[10px] text-gray-400 font-bold uppercase">
+                  {% if member.role == 'admin' %}Administrateur{% else %}Membre{% endif %}
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-2">
+              {% if member.status == 'pending' %}
+                <span class="px-2 py-1 bg-yellow-50 text-yellow-700 text-[10px] font-bold rounded-lg">En attente</span>
+              {% elif member.status == 'active' %}
+                <span class="px-2 py-1 bg-green-50 text-green-700 text-[10px] font-bold rounded-lg">Actif</span>
+              {% endif %}
+              {% if member.status == 'pending' %}
+              <form method="post" action="{% url 'accounts:cancel_invitation' member.id %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Annuler">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </form>
+              {% elif member.status == 'active' %}
+              <form method="post" action="{% url 'accounts:remove_team_member' member.id %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors" title="Retirer">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+          {% empty %}
+          <div class="text-center py-8 text-gray-400 text-sm">
+            Aucun membre d'équipe. Invitez des collaborateurs pour commencer.
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <div id="content-locations" class="tab-content hidden">
+      <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+        <div class="mb-8 flex justify-between items-center">
+          <div>
+            <h2 class="text-xl font-bold text-gray-900 mb-1">Points de vente</h2>
+            <p class="text-xs text-gray-400 font-medium">Gérez vos différents points de vente</p>
+          </div>
+          <a href="{% url 'dashboard:locations' %}" class="px-4 py-2 bg-primary text-white text-xs font-bold rounded-xl hover:bg-primary/90 transition-all">
+            Gérer les points de vente
+          </a>
+        </div>
+
+        <div class="text-center py-8 text-gray-400 text-sm">
+          <p>Accédez à la gestion complète de vos points de vente</p>
+          <a href="{% url 'dashboard:locations' %}" class="inline-block mt-4 text-primary font-bold hover:underline">
+            Aller à la page de gestion →
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Live Preview -->
+  <div class="lg:col-span-5 lg:sticky lg:top-8">
+    <div class="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-8">
+      <div class="mb-8">
+        <h2 class="text-xl font-bold text-gray-900 mb-1">Aperçu de la carte</h2>
+        <p class="text-xs text-gray-400 font-medium">Visualisation en temps réel</p>
+      </div>
+
+      <!-- Preview Card - New Design -->
+      <div id="preview-card" class="relative w-full aspect-[5/3] rounded-[2rem] p-7 flex flex-col text-white overflow-hidden shadow-[0_30px_80px_-20px_rgba(15,23,42,0.5)] ring-1 ring-white/10 transition-all duration-300"
+           style="background: radial-gradient(120% 120% at 0% 0%, {{ program.color_secondary|default:program.color_primary|default:'#f59e0b' }}22 0%, transparent 45%), radial-gradient(120% 120% at 100% 100%, {{ program.color_secondary|default:program.color_primary|default:'#f59e0b' }}18 0%, transparent 50%), linear-gradient(135deg, {{ program.color_primary|default:'#0f172a' }} 0%, #1e293b 100%);">
+        
+        <!-- Decorative gloss -->
+        <div class="pointer-events-none absolute inset-0">
+          <div class="absolute -top-24 -right-16 w-72 h-72 rounded-full bg-white/5 blur-3xl" />
+          <div class="absolute -bottom-32 -left-20 w-80 h-80 rounded-full blur-3xl" style="background-color: {{ program.color_secondary|default:program.color_primary|default:'#f59e0b' }}22" />
+        </div>
+
+        <!-- Standard Layer -->
+        <div id="standard-preview-layer" class="h-full flex flex-col {% if program.use_custom_design %}hidden{% endif %}">
+          <!-- Chip / brand row -->
+          <div class="relative flex items-start justify-between">
+            <div class="flex items-center gap-4">
+              <div class="w-24 h-24 rounded-3xl bg-gradient-to-br from-white to-neutral-100 border border-white/40 flex items-center justify-center overflow-hidden flex-shrink-0 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.4)]">
+                {% if user.merchant_profile.logo %}
+                  <img id="logo-preview" src="{{ user.merchant_profile.logo.url }}" class="w-full h-full object-contain">
+                {% else %}
+                  <span id="logo-initial" class="text-5xl font-black tracking-tight" style="color: {{ program.color_primary|default:'#0f172a' }}">
+                    {{ user.merchant_profile.business_name|first }}
+                  </span>
+                {% endif %}
+              </div>
+              <div>
+                <div class="text-[10px] uppercase tracking-[0.25em] text-white/50 font-semibold flex items-center gap-1.5">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20" style="color: {{ program.color_secondary|default:program.color_primary|default:'#f59e0b' }}"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                  Membre privilégié
+                </div>
+                <div id="preview-biz-name" class="font-serif text-2xl leading-tight mt-1">{{ user.merchant_profile.business_name }}</div>
+                <div class="text-[11px] text-white/40 tracking-wider mt-0.5">Loyalty · No. 0042</div>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <div class="text-[9px] uppercase tracking-[0.2em] text-white/40">Devise</div>
+              <div class="text-lg font-semibold mt-0.5" style="color: {{ program.color_secondary|default:program.color_primary|default:'#f59e0b' }}">
+                {% if program.currency == 'EUR' %}€{% elif program.currency == 'USD' %}${% else %}FCFA{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-end justify-between">
+            <div>
+              <div class="text-[10px] text-white/50 font-bold uppercase tracking-widest mb-1.5">Récompense</div>
+              <div id="preview-reward" class="text-sm font-bold bg-black/10 backdrop-blur-md border border-white/10 px-3 py-1.5 rounded-lg">{{ program.reward_description|default:"1 café offert" }}</div>
+              <div class="text-[10px] text-white/40 font-bold uppercase tracking-widest mt-2">Devise : <span id="preview-currency-symbol">{% if program.currency == 'EUR' %}€{% elif program.currency == 'USD' %}${% else %}FCFA{% endif %}</span></div>
+            </div>
+            <div class="flex gap-1.5">
+              {% for i in "1234567891"|make_list %}
+              <div class="w-5 h-5 rounded-md {% if forloop.counter <= 3 %}bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]{% else %}bg-black/20{% endif %} flex items-center justify-center">
+                {% if forloop.counter <= 3 %}
+                  <svg class="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 20 20" style="color: {{ program.color_primary|default:'#3b82f6' }};"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Custom Layer -->
+        <div id="custom-preview-layer" class="h-full {% if not program.use_custom_design %}hidden{% endif %}">
+          <!-- Dynamically filled -->
+        </div>
+
+      </div>
+
+      <div class="mt-8 space-y-4">
+        <div class="flex items-center gap-4 text-gray-500 font-medium">
+          <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="text-xs">Optimisé pour Google Wallet</span>
+        </div>
+        <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="text-[10px] text-gray-400 font-bold uppercase leading-tight italic">Chaque modification est disponible instantanément pour vos clients.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+<style>
+.tab-btn {
+  color: #94a3b8; /* slate-400 */
+}
+.tab-btn:hover {
+  background: rgba(0,0,0,0.02);
+  color: #1e293b; /* slate-800 */
+}
+.tab-btn.active {
+  background: white;
+  color: #3b82f6; /* primary-500 */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>
+
+<script>
+// --- Global Utilities ---
+const getCsrfToken = () => document.querySelector('[name=csrfmiddlewaretoken]')?.value || '{{ csrf_token }}';
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-2xl shadow-2xl z-[100] font-bold text-sm transition-all duration-300 translate-y-20 flex items-center gap-3`;
+    
+    if (type === 'success') {
+        toast.classList.add('bg-gray-900', 'text-white');
+        toast.innerHTML = `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3"/></svg>${message}`;
+    } else {
+        toast.classList.add('bg-red-600', 'text-white');
+        toast.innerHTML = `<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01" stroke-width="3"/></svg>${message}`;
+    }
+    
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.remove('translate-y-20'), 100);
+    setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+    }, 4000);
+}
+
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById('tab-' + tabId).classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+    document.getElementById('content-' + tabId).classList.remove('hidden');
+}
+
+function previewLogo(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) { showToast('Le fichier est trop volumineux (max 5 MB)', 'error'); return; }
+    if (!file.type.startsWith('image/')) { showToast('Veuillez sélectionner une image', 'error'); return; }
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const previewImg = document.getElementById('logo-preview');
+        const previewInitial = document.getElementById('logo-initial');
+        if (previewImg) previewImg.src = e.target.result;
+        else {
+            const container = document.querySelector('.w-16.h-16.rounded-2xl');
+            container.innerHTML = `<img id="logo-preview" src="${e.target.result}" class="w-full h-full object-contain bg-white">`;
+        }
+        if (previewInitial) previewInitial.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
+
+function updateCardPreview() {
+    const bizName = document.getElementById('input-biz-name').value.trim();
+    const reward = document.getElementById('input-reward-desc') ? document.getElementById('input-reward-desc').value.trim() : "";
+    document.getElementById('preview-biz-name').textContent = bizName || 'Votre commerce';
+    if (reward) document.getElementById('preview-reward').textContent = reward;
+    if (document.getElementById('preview-logo-initial')) {
+        document.getElementById('preview-logo-initial').textContent = (bizName || 'V').charAt(0);
+    }
+    updateCardBackground();
+}
+
+const CURRENCY_SYMBOLS = { XOF: 'FCFA', EUR: '€', USD: '$' };
+function setProgramCurrency(code) {
+    document.getElementById('currency-input').value = code;
+    document.querySelectorAll('.currency-choice-btn').forEach(btn => {
+        btn.classList.toggle('border-primary', btn.dataset.currency === code);
+        btn.classList.toggle('bg-primary/5', btn.dataset.currency === code);
+    });
+    const preview = document.getElementById('preview-currency-symbol');
+    if (preview) preview.textContent = CURRENCY_SYMBOLS[code] || code;
+}
+
+function normalizeHexColor(color) {
+    if (!color) return null;
+    let v = color.trim().replace(/^#/, '');
+    if (v.length === 3) v = v.split('').map(c => c + c).join('');
+    if (/^[0-9a-fA-F]{6}$/.test(v)) return '#' + v.toLowerCase();
+    return null;
+}
+
+function setAccentColor(color) {
+    const hex = normalizeHexColor(color);
+    if (!hex) return;
+    document.getElementById('color-picker').value = hex;
+    document.getElementById('color-hex').value = hex;
+    document.getElementById('hidden-color-input').value = hex;
+    if (document.getElementById('color-solid-toggle').checked) setSecondaryColor(hex, false);
+    updateCardBackground();
+}
+
+function setSecondaryColor(color, updateInput = true) {
+    const hex = normalizeHexColor(color);
+    if (!hex) return;
+    if (updateInput) {
+        document.getElementById('secondary-color-picker').value = hex;
+        document.getElementById('secondary-color-hex').value = hex;
+    }
+    document.getElementById('hidden-secondary-input').value = hex;
+    updateCardBackground();
+}
+
+function toggleSecondaryColor(isSolid) {
+    if (isSolid) {
+        const primaryColor = document.getElementById('hidden-color-input').value || '#0f172a';
+        setSecondaryColor(primaryColor, true);
+    }
+    updateCardBackground();
+}
+
+function toggleCustomDesign(enabled) {
+    document.getElementById('custom-html-section').classList.toggle('hidden', !enabled);
+    updateCardBackground();
+}
+
+function updateCardBackground() {
+    const p = document.getElementById('hidden-color-input').value || '#0f172a';
+    const s = document.getElementById('hidden-secondary-input').value || '#f59e0b';
+    const card = document.getElementById('preview-card');
+    const standardLayer = document.getElementById('standard-preview-layer');
+    const customLayer = document.getElementById('custom-preview-layer');
+    const isSolid = document.getElementById('color-solid-toggle').checked;
+    const isCustom = document.getElementById('custom-design-toggle').checked;
+    
+    // Get advanced design controls
+    const gradientDirection = document.getElementById('gradient-direction')?.value || '135deg';
+    const gradientIntensity = document.getElementById('gradient-intensity')?.value || 50;
+    const fontFamily = document.getElementById('font-family')?.value || 'sans-serif';
+    const fontSize = document.getElementById('font-size')?.value || 'medium';
+    const fontStyle = document.getElementById('font-style')?.value || 'normal';
+    
+    if (isCustom) {
+        standardLayer.classList.add('hidden');
+        customLayer.classList.remove('hidden');
+        const customHtml = document.getElementById('custom-html-input').value;
+        const bizName = document.getElementById('input-biz-name').value || 'Votre commerce';
+        const logoImg = document.getElementById('logo-preview');
+        const logoUrl = logoImg ? logoImg.src : '';
+        let previewHtml = customHtml || '<div class="flex items-center justify-center h-full text-white/50 italic text-xs">Code HTML vide...</div>';
+        previewHtml = previewHtml.replace(/{name}/g, bizName).replace(/{balance}/g, '• • • • •').replace(/{logo}/g, logoUrl).replace(/{total}/g, '15').replace(/{phone}/g, '77 000 00 00');
+        customLayer.innerHTML = previewHtml;
+        card.style.background = 'none';
+        card.style.padding = '0';
+        card.classList.remove('overflow-hidden');
+    } else {
+        standardLayer.classList.remove('hidden');
+        customLayer.classList.add('hidden');
+        card.classList.add('overflow-hidden');
+        card.style.padding = '1.5rem';
+        
+        // Apply gradient with direction and intensity
+        const opacity = (gradientIntensity / 100).toFixed(2);
+        const accentColor = s + Math.floor(opacity * 255).toString(16).padStart(2, '0');
+        
+        if (gradientDirection === 'radial') {
+            card.style.background = `radial-gradient(120% 120% at 0% 0%, ${accentColor} 0%, transparent 45%), radial-gradient(120% 120% at 100% 100%, ${accentColor} 0%, transparent 50%), linear-gradient(135deg, ${p} 0%, #1e293b 100%)`;
+        } else {
+            card.style.background = isSolid ? p : `linear-gradient(${gradientDirection}, ${p}, ${s})`;
+        }
+        
+        // Apply typography
+        const bizName = document.getElementById('preview-biz-name');
+        if (bizName) {
+            bizName.style.fontFamily = fontFamily;
+            bizName.style.fontSize = fontSize === 'small' ? '1.25rem' : fontSize === 'large' ? '1.75rem' : '1.5rem';
+            bizName.style.fontStyle = fontStyle;
+        }
+        
+        document.querySelectorAll('#standard-preview-layer svg[fill="currentColor"]').forEach(svg => {
+            if (svg.closest('.bg-white') || svg.closest('.w-5')) svg.style.color = p;
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialTab = urlParams.get('tab') || 'commerce';
+    switchTab(initialTab);
+    updateCardBackground();
+    
+    // Add event listeners for advanced design controls
+    const gradientDirection = document.getElementById('gradient-direction');
+    const gradientIntensity = document.getElementById('gradient-intensity');
+    const fontFamily = document.getElementById('font-family');
+    const fontSize = document.getElementById('font-size');
+    const fontStyle = document.getElementById('font-style');
+    
+    if (gradientDirection) gradientDirection.addEventListener('change', updateCardBackground);
+    if (gradientIntensity) gradientIntensity.addEventListener('input', updateCardBackground);
+    if (fontFamily) fontFamily.addEventListener('change', updateCardBackground);
+    if (fontSize) fontSize.addEventListener('change', updateCardBackground);
+    if (fontStyle) fontStyle.addEventListener('change', updateCardBackground);
+});
+
+// --- WhatsApp Logic ---
+let waStatusInterval = null;
+
+async function startConnection() {
+    document.getElementById('wa-connect-section').classList.add('hidden');
+    document.getElementById('wa-qr-section').classList.remove('hidden');
+    document.getElementById('wa-qr-loading').classList.remove('hidden');
+    document.getElementById('wa-qr-image').classList.add('hidden');
+    document.getElementById('wa-pairing-container').classList.add('hidden');
+    document.getElementById('wa-status-text').textContent = 'Initialisation...';
+
+    try {
+        const res = await fetch('{% url "accounts:whatsapp_connect" %}', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrfToken(), 'Content-Type': 'application/json' },
+        });
+        const data = await res.json();
+        if (data.success) {
+            if (data.qrcode) showQR(data.qrcode);
+            else setTimeout(fetchQRCode, 2000);
+            startStatusPolling();
+        } else {
+            showToast(data.error || 'Erreur serveur', 'error');
+            document.getElementById('wa-status-text').textContent = data.error;
+        }
+    } catch (e) { showToast('Erreur de connexion', 'error'); }
+}
+
+async function startPairingCode() {
+    const btn = event.target.closest('button');
+    const orig = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<div class="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>';
+    try {
+        const res = await fetch('{% url "accounts:whatsapp_pairing_code" %}', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCsrfToken() }
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('wa-connect-section').classList.add('hidden');
+            document.getElementById('wa-qr-section').classList.remove('hidden');
+            document.getElementById('wa-qr-loading').classList.add('hidden');
+            document.getElementById('wa-pairing-container').classList.remove('hidden');
+            document.getElementById('wa-pairing-code').textContent = data.pairing_code;
+            document.getElementById('wa-status-text').textContent = 'Code généré !';
+            startStatusPolling();
+        } else { showToast(data.error || 'Erreur', 'error'); }
+    } catch (e) { showToast('Erreur serveur', 'error'); }
+    finally { btn.disabled = false; btn.innerHTML = orig; }
+}
+
+async function fetchQRCode() {
+    try {
+        const res = await fetch('{% url "accounts:whatsapp_qrcode" %}');
+        const data = await res.json();
+        if (data.qrcode) showQR(data.qrcode);
+        else if (!waStatusInterval) setTimeout(fetchQRCode, 3000);
+    } catch (e) { if (!waStatusInterval) setTimeout(fetchQRCode, 3000); }
+}
+
+function showQR(base64) {
+    const img = document.getElementById('wa-qr-image');
+    const loading = document.getElementById('wa-qr-loading');
+    if (img && loading) {
+        img.src = base64;
+        img.classList.remove('hidden');
+        loading.classList.add('hidden');
+        document.getElementById('wa-status-text').textContent = 'Scannez le QR Code';
+    }
+}
+
+function startStatusPolling() {
+    if (waStatusInterval) clearInterval(waStatusInterval);
+    waStatusInterval = setInterval(async () => {
+        try {
+            const res = await fetch('{% url "accounts:whatsapp_status" %}');
+            const data = await res.json();
+            if (data.connected) {
+                clearInterval(waStatusInterval);
+                document.getElementById('wa-status-bar').className = 'p-3 bg-green-50 border border-green-100 rounded-xl flex items-center justify-center gap-2 mb-6';
+                document.getElementById('wa-status-text').textContent = '✅ Connecté !';
+                showToast('WhatsApp connecté !');
+                setTimeout(() => location.reload(), 1500);
+            } else if (data.state === 'close' || data.state === null) {
+                if (document.getElementById('wa-pairing-container').classList.contains('hidden')) fetchQRCode();
+            }
+        } catch (e) {}
+    }, 5000);
+}
+
+function copyPairingCode(e) {
+    const code = document.getElementById('wa-pairing-code').textContent;
+    navigator.clipboard.writeText(code).then(() => {
+        const btn = e.target.closest('button');
+        const orig = btn.innerHTML;
+        btn.innerHTML = '<svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3"/></svg> Copié !';
+        btn.classList.replace('text-gray-500', 'text-green-600');
+        setTimeout(() => {
+            btn.innerHTML = orig;
+            btn.classList.replace('text-green-600', 'text-gray-500');
+        }, 2000);
+    });
+}
+
+async function toggleNotifications(enabled) {
+    const formData = new FormData();
+    formData.append('whatsapp_enabled', enabled ? '1' : '0');
+    formData.append('csrfmiddlewaretoken', getCsrfToken());
+    try {
+        await fetch('{% url "accounts:whatsapp_toggle" %}', { method: 'POST', body: formData });
+        showToast(enabled ? 'Notifications activées' : 'Notifications désactivées');
+    } catch (e) { showToast('Erreur', 'error'); }
+}
+</script>
+
+{% include 'dashboard/partials/share_modal.html' %}
+
+{% endblock %}

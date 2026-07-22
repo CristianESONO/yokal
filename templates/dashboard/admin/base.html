@@ -1,0 +1,150 @@
+{% extends 'base.html' %}
+{% block title %}Console Admin — Yokalma{% endblock %}
+
+{% block extra_head %}
+<style>
+  #admin-sidebar {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 100;
+  }
+  #admin-backdrop { z-index: 90; }
+  @media (max-width: 767px) {
+    #admin-sidebar { transform: translateX(-100%); }
+    #admin-sidebar.open { transform: translateX(0); }
+  }
+  /* Indépendant du cache Tailwind / Service Worker */
+  #admin-sidebar a.admin-nav-active {
+    background-color: #18181b !important;
+    color: #ffffff !important;
+  }
+  #admin-sidebar a.admin-nav-active svg {
+    color: #ffffff !important;
+  }
+  .admin-inline-icon {
+    width: 1rem !important;
+    height: 1rem !important;
+    max-width: 1rem;
+    max-height: 1rem;
+    flex-shrink: 0;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-zinc-50 font-sans">
+
+  <!-- Mobile top bar -->
+  <div class="md:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-zinc-200 shadow-sm flex items-center justify-between px-4 h-14">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+        <span class="text-primary font-bold text-sm">✦</span>
+      </div>
+      <span class="font-bold text-zinc-900 text-sm">Admin Hub<span class="text-primary">.</span></span>
+    </div>
+    <button onclick="document.getElementById('admin-sidebar').classList.toggle('open');document.getElementById('admin-backdrop').classList.toggle('hidden');" class="w-9 h-9 rounded-xl bg-zinc-50 flex items-center justify-center hover:bg-zinc-100 transition-colors">
+      <svg class="w-5 h-5 text-zinc-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+
+  <!-- Backdrop -->
+  <div id="admin-backdrop" onclick="document.getElementById('admin-sidebar').classList.remove('open');this.classList.add('hidden');" class="hidden fixed inset-0 bg-zinc-900/40 backdrop-blur-sm md:hidden"></div>
+
+  <!-- Sidebar -->
+  <aside id="admin-sidebar" class="w-64 bg-white border-r border-zinc-200/80 flex-shrink-0 fixed h-full flex flex-col overflow-y-auto shadow-sm">
+    <div class="flex-1">
+      <!-- Logo -->
+      <div class="flex items-center gap-3 px-6 py-6 border-b border-zinc-100">
+        <div class="flex size-9 items-center justify-center rounded-lg bg-zinc-900 text-white font-bold text-base">Y</div>
+        <div>
+          <div class="font-bold text-zinc-950 leading-tight">Admin Hub</div>
+          <div class="text-[10px] text-zinc-400 font-semibold uppercase tracking-widest">Super Admin</div>
+        </div>
+      </div>
+
+      <!-- Menu Principal -->
+      <nav class="px-3 pt-5 space-y-1">
+        <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] px-3 mb-3">Menu Principal</div>
+
+        <a href="{% url 'admin_overview' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors {% if admin_active == 'overview' %}admin-nav-active{% else %}text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900{% endif %}">
+          <svg class="w-5 h-5 flex-shrink-0 {% if admin_active == 'overview' %}text-white{% else %}text-zinc-500{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Vue d'ensemble
+        </a>
+
+        <a href="{% url 'admin_marchands' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors {% if admin_active == 'marchands' %}admin-nav-active{% else %}text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900{% endif %}">
+          <svg class="w-5 h-5 flex-shrink-0 {% if admin_active == 'marchands' %}text-white{% else %}text-zinc-500{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/><path d="M16 3.13a4 4 0 010 7.75"/><path d="M21 21v-2a4 4 0 00-3-3.87"/></svg>
+          Marchands
+        </a>
+
+        <a href="{% url 'admin_abonnements' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors {% if admin_active == 'abonnements' %}admin-nav-active{% else %}text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900{% endif %}">
+          <svg class="w-5 h-5 flex-shrink-0 {% if admin_active == 'abonnements' %}text-white{% else %}text-zinc-500{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><path d="M1 10h22"/></svg>
+          Abonnements
+        </a>
+      </nav>
+
+      <!-- Système -->
+      <nav class="px-3 pt-6 space-y-1">
+        <div class="text-[10px] font-bold text-zinc-400 uppercase tracking-[0.2em] px-3 mb-3">Système</div>
+
+        <a href="{% url 'admin_devises' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors {% if admin_active == 'devises' %}admin-nav-active{% else %}text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900{% endif %}">
+          <svg class="w-5 h-5 flex-shrink-0 {% if admin_active == 'devises' %}text-white{% else %}text-zinc-500{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H7"/></svg>
+          Devises (XOF)
+        </a>
+
+        <a href="{% url 'admin_integrations' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors {% if admin_active == 'integrations' %}admin-nav-active{% else %}text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900{% endif %}">
+          <svg class="w-5 h-5 flex-shrink-0 {% if admin_active == 'integrations' %}text-white{% else %}text-zinc-500{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+          Intégrations
+        </a>
+
+        <a href="{% url 'admin_logs' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors {% if admin_active == 'logs' %}admin-nav-active{% else %}text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900{% endif %}">
+          <svg class="w-5 h-5 flex-shrink-0 {% if admin_active == 'logs' %}text-white{% else %}text-zinc-500{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          Logs API
+        </a>
+
+        <a href="{% url 'admin_parametres' %}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors {% if admin_active == 'parametres' %}admin-nav-active{% else %}text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900{% endif %}">
+          <svg class="w-5 h-5 flex-shrink-0 {% if admin_active == 'parametres' %}text-white{% else %}text-zinc-500{% endif %}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+          Paramètres
+        </a>
+      </nav>
+    </div>
+
+    <!-- User footer -->
+    <div class="p-4 border-t border-zinc-100">
+      <div class="flex items-center gap-3 px-2 py-2">
+        <div class="flex w-8 h-8 items-center justify-center rounded-full bg-zinc-200 ring-1 ring-black/5">
+          <span class="text-[10px] font-semibold text-zinc-700">{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</span>
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-zinc-900 truncate">{{ user.get_full_name|default:user.username }}</div>
+          <div class="text-[10px] text-zinc-400">Super Admin</div>
+        </div>
+        <a href="{% url 'accounts:logout' %}" title="Déconnexion" class="rounded p-1.5 text-zinc-400 hover:bg-red-50 hover:text-red-500 transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main content -->
+  <main class="md:ml-64 pt-14 md:pt-0 min-h-screen">
+
+    <!-- Admin Topbar -->
+    <div class="hidden md:flex items-center justify-between px-8 py-4 border-b border-zinc-200/80 bg-white sticky top-0 z-10">
+      <div class="text-xs text-zinc-400">
+        {% block admin_breadcrumb %}Console Admin{% endblock %}
+      </div>
+      <div class="flex items-center gap-3 text-sm text-zinc-600">
+        <span class="text-zinc-400">{{ user.email }}</span>
+        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700 border border-emerald-200">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          Super Admin
+        </span>
+      </div>
+    </div>
+
+    <div class="p-6 md:p-8">
+      {% block admin_content %}{% endblock %}
+    </div>
+
+  </main>
+</div>
+{% endblock %}

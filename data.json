@@ -1,0 +1,478 @@
+[
+{
+  "model": "auth.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$xggC42kwO6ESAQoBnjS3CO$BnpkotiqGH7E/a9u4RdQsliiXG3BdNAxvV7Q6EYaekc=",
+    "last_login": "2026-06-02T15:41:51.323Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@loyo.local",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-06-02T14:05:00.636Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$HpETAYz47BQXHTa8eCTg71$WcBFlUV4QwU+AzN2h1aY/SLs2g3PVM5YbW95sh9x3kM=",
+    "last_login": "2026-06-02T14:50:55.246Z",
+    "is_superuser": false,
+    "username": "ruslanDevEsono",
+    "first_name": "",
+    "last_name": "",
+    "email": "lebosscristian@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-02T14:29:02.069Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 3,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$s5kjas2zjRz8WmDKoabY9j$W5CgJLUF7i3gSGE6fw0laZOduwyNehln14iS1EsRt18=",
+    "last_login": "2026-06-03T04:25:29.938Z",
+    "is_superuser": false,
+    "username": "ruslancristian",
+    "first_name": "",
+    "last_name": "",
+    "email": "ruslancristian7@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-03T04:25:29.157Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 4,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$3VGgkir7DBlaI6HCnQ0iks$1OXxhGeAk0GuTxLLRbuo9KG9mkzmzKoOI3rAS3TC/vI=",
+    "last_login": null,
+    "is_superuser": false,
+    "username": "esono mayeruslan cristian",
+    "first_name": "ESONO MAYE",
+    "last_name": "Ruslan Cristian",
+    "email": "ruslan-esono@outlook.fr",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-03T05:19:45.299Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 5,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$jdFetYBKUWjs9PJ5YTmTsd$IDpxGyOMaZv+S0tKLNPCixqZA6PxCd2q5gWhkXA5C5g=",
+    "last_login": "2026-06-03T07:54:40.102Z",
+    "is_superuser": false,
+    "username": "ruslan-esono@outlook.fr",
+    "first_name": "ESONO MAYE",
+    "last_name": "Ruslan Cristian",
+    "email": "ruslan-esono@outlook.fr",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-03T05:22:42.809Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 6,
+  "fields": {
+    "password": "pbkdf2_sha256$600000$HmBvfP1dYvSoSadZXoI59C$gUnvHOdHBhHPnaCbMbQUueFNwcShmpwhkG7yxEYF8X8=",
+    "last_login": "2026-06-03T05:25:47.552Z",
+    "is_superuser": false,
+    "username": "ruslan-esono@outlook.fop",
+    "first_name": "ESONO MAYE",
+    "last_name": "Ruslan Cristian",
+    "email": "ruslan-esono@outlook.fop",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2026-06-03T05:25:46.548Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "bu44igwof2ags2hvybhzshhcuxnevwh9",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hBhaGBcuvcMhGEGqRqalHZlvLtt0oVu_3vvv1VM61Lj2mWOI6uLsur0u1HKT2k74Edq90nnqS3zSHpX9EG7vk0sr-vh_h3U1OtWD558KMBowJosnjiUbBjFZo_o2DMSJnQkmwkFLQUzgPEAQeDsjPp8AexdN5M:1wUQSF:wkPzICwH-ukYWQXhYPUTWGSX2eWUQ8xngqbg5oC9U2k",
+    "expire_date": "2026-06-16T14:50:55.258Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "corq6npjjp8mk8dmnigehk2xtetjreqz",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGln4v6akzxms9a6DA8iR4qRC3B0ipYD2zcx7iYTbWtPWy5ImFhfhxOl3y0iP0nbAd2y3WdLc1mXKclfkQbscZi7P6-H-HVTs9VuT1QVjBKMcFohEhUG7zAGsVeBsjno0hvCsPYdsnAOE6AP6MTCqQOL9AeKKN8E:1wUgQy:u0JoTbZZmYoZ1F3Z12-1qHy8fwK_mYfiWi_GKCnc8EA",
+    "expire_date": "2026-06-17T07:54:40.168Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "h5wvdt12upeucxj4hmrnk2pbfckrx9hc",
+  "fields": {
+    "session_data": ".eJxVjMsOwiAQRf-FtSGlDI-6dO83kJkBpGogKe3K-O_apAvd3nPOfYmA21rC1tMS5ijOQonT70bIj1R3EO9Yb01yq-syk9wVedAury2m5-Vw_w4K9vKtQZFDMpppUAApkxkx5uQYNLrRT8oZDyraCZC0scDJZzZ-YCanrSfx_gDqCDgC:1wURFX:rX7AySYtqtOPp9cGWkhr5LG_oh0Xwaz26EQji6zgfL0",
+    "expire_date": "2026-06-16T15:41:51.341Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "os9t6rumq6fskvk45y3xtfe8nxfcm873",
+  "fields": {
+    "session_data": ".eJxVjEsOwjAMBe-SNYocN6kJS_Y9Q-U4DimgVupnhbg7VOoCtm9m3sv0vK213xad-yGbi2nN6XdLLA8dd5DvPN4mK9O4zkOyu2IPuthuyvq8Hu7fQeWlfmtQyoKoxQMV5QKAxbtGHYkgxQLoA0YObU5C3ARKEc4-gER0mTSZ9wfr2zfL:1wUe6t:ANlA2Sg8OqHZxcWdi1Dmxt9paF_ftRnfEg4exA5uEjQ",
+    "expire_date": "2026-06-17T05:25:47.564Z"
+  }
+},
+{
+  "model": "accounts.merchantprofile",
+  "pk": 1,
+  "fields": {
+    "user": 2,
+    "business_name": "ElsaShop",
+    "phone": "786541503",
+    "country": "SÚnÚgal",
+    "logo": "",
+    "created_at": "2026-06-02T14:29:02.716Z"
+  }
+},
+{
+  "model": "accounts.merchantprofile",
+  "pk": 2,
+  "fields": {
+    "user": 3,
+    "business_name": "LEBADIL",
+    "phone": "786541503",
+    "country": "SÚnÚgal",
+    "logo": "",
+    "created_at": "2026-06-03T04:25:29.893Z"
+  }
+},
+{
+  "model": "accounts.merchantprofile",
+  "pk": 3,
+  "fields": {
+    "user": 5,
+    "business_name": "LEBADIL",
+    "phone": "781855138",
+    "country": "SÚnÚgal",
+    "logo": "merchants/logos/images_hifVDXl.png",
+    "created_at": "2026-06-03T05:22:43.562Z"
+  }
+},
+{
+  "model": "accounts.merchantprofile",
+  "pk": 4,
+  "fields": {
+    "user": 6,
+    "business_name": "LEBADILE",
+    "phone": "781855138",
+    "country": "SÚnÚgal",
+    "logo": "merchants/logos/kayplay-logo_TFbJg8W.ico",
+    "created_at": "2026-06-03T05:25:47.479Z"
+  }
+},
+{
+  "model": "loyalty.loyaltyprogram",
+  "pk": 1,
+  "fields": {
+    "merchant": 1,
+    "name": "CafÚ de la Place",
+    "program_type": "points",
+    "card_template": "luxury",
+    "points_per_unit": "0.99",
+    "reward_threshold": 10,
+    "color_primary": "#50a531",
+    "color_secondary": "#18c9bd",
+    "logo": "programs/logos/images.png",
+    "reward_description": "1 cafÚ offerts",
+    "active": true,
+    "google_wallet_class_id": "",
+    "created_at": "2026-06-02T14:37:51.548Z",
+    "updated_at": "2026-06-02T16:34:14.719Z"
+  }
+},
+{
+  "model": "loyalty.loyaltyprogram",
+  "pk": 2,
+  "fields": {
+    "merchant": 4,
+    "name": "Programme LEBADILE",
+    "program_type": "visits",
+    "card_template": "classic",
+    "points_per_unit": "1.00",
+    "reward_threshold": 10,
+    "color_primary": "#0E0F0D",
+    "color_secondary": "#D4FF4E",
+    "logo": "",
+    "reward_description": "Offre gratuite",
+    "active": true,
+    "google_wallet_class_id": "",
+    "created_at": "2026-06-03T05:25:47.508Z",
+    "updated_at": "2026-06-03T05:25:47.508Z"
+  }
+},
+{
+  "model": "loyalty.loyaltyprogram",
+  "pk": 3,
+  "fields": {
+    "merchant": 3,
+    "name": "Program Lebadile",
+    "program_type": "visits",
+    "card_template": "classic",
+    "points_per_unit": "1.00",
+    "reward_threshold": 10,
+    "color_primary": "#0e0f0d",
+    "color_secondary": "#d4ff4e",
+    "logo": "",
+    "reward_description": "Cafe gratuit",
+    "active": true,
+    "google_wallet_class_id": "",
+    "created_at": "2026-06-03T08:01:15.917Z",
+    "updated_at": "2026-06-03T08:01:15.918Z"
+  }
+},
+{
+  "model": "loyalty.loyaltycard",
+  "pk": 1,
+  "fields": {
+    "program": 1,
+    "customer_name": "Ruslan Cristian ESONO MAYE",
+    "customer_phone": "786541503",
+    "balance": "0.00",
+    "total_accumulated": "0.00",
+    "qr_token": "3aa78895-5900-4acf-86ae-b8349cf4e620",
+    "google_wallet_object_id": "",
+    "google_wallet_linked": false,
+    "created_at": "2026-06-02T14:38:20.920Z",
+    "updated_at": "2026-06-02T14:57:25.425Z"
+  }
+},
+{
+  "model": "loyalty.loyaltycard",
+  "pk": 2,
+  "fields": {
+    "program": 1,
+    "customer_name": "Cristian ESONO",
+    "customer_phone": "781855138",
+    "balance": "0.91",
+    "total_accumulated": "10.91",
+    "qr_token": "2cb2b86e-6a26-46b4-b157-bd1dd050df28",
+    "google_wallet_object_id": "",
+    "google_wallet_linked": false,
+    "created_at": "2026-06-02T15:44:48.288Z",
+    "updated_at": "2026-06-02T16:36:36.754Z"
+  }
+},
+{
+  "model": "loyalty.loyaltycard",
+  "pk": 3,
+  "fields": {
+    "program": 3,
+    "customer_name": "John Doe",
+    "customer_phone": "0612345678",
+    "balance": "0.00",
+    "total_accumulated": "0.00",
+    "qr_token": "84a20dc4-8fc2-4d8c-97ba-d0ac05c98368",
+    "google_wallet_object_id": "",
+    "google_wallet_linked": false,
+    "created_at": "2026-06-03T08:01:59.250Z",
+    "updated_at": "2026-06-03T08:01:59.250Z"
+  }
+},
+{
+  "model": "loyalty.loyaltycard",
+  "pk": 4,
+  "fields": {
+    "program": 3,
+    "customer_name": "Maria vitalina",
+    "customer_phone": "664321356",
+    "balance": "2.00",
+    "total_accumulated": "2.00",
+    "qr_token": "010e052c-2ff8-4962-83a0-63156c8945e7",
+    "google_wallet_object_id": "",
+    "google_wallet_linked": false,
+    "created_at": "2026-06-03T13:18:21.435Z",
+    "updated_at": "2026-06-03T14:23:38.510Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 1,
+  "fields": {
+    "card": 1,
+    "amount": "1.00",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T14:57:25.442Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 2,
+  "fields": {
+    "card": 2,
+    "amount": "1.00",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:20:36.086Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 3,
+  "fields": {
+    "card": 2,
+    "amount": "1.00",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:21:05.609Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 4,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:34:39.906Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 5,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:35:06.846Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 6,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:35:20.297Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 7,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:35:29.859Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 8,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:35:39.547Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 9,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:35:46.792Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 10,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:36:07.993Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 11,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:36:14.395Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 12,
+  "fields": {
+    "card": 2,
+    "amount": "0.99",
+    "stamped_by": 2,
+    "note": "",
+    "stamped_at": "2026-06-02T16:36:36.733Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 13,
+  "fields": {
+    "card": 4,
+    "amount": "1.00",
+    "stamped_by": 5,
+    "note": "",
+    "stamped_at": "2026-06-03T13:18:48.638Z"
+  }
+},
+{
+  "model": "loyalty.stamphistory",
+  "pk": 14,
+  "fields": {
+    "card": 4,
+    "amount": "1.00",
+    "stamped_by": 5,
+    "note": "",
+    "stamped_at": "2026-06-03T14:23:38.525Z"
+  }
+},
+{
+  "model": "loyalty.reward",
+  "pk": 1,
+  "fields": {
+    "card": 2,
+    "unlocked_at": "2026-06-02T16:36:36.743Z",
+    "redeemed": true,
+    "redeemed_at": "2026-06-02T16:40:25.478Z"
+  }
+}
+]

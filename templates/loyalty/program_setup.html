@@ -1,0 +1,478 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Mon Programme — Yokalma{% endblock %}
+
+{% block dash_content %}
+
+<div class="mb-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div>
+        <a href="{% url 'dashboard:programs' %}" class="text-xs font-bold text-primary hover:underline mb-2 inline-block">← Mes programmes</a>
+        <h1 class="text-3xl font-black text-gray-900 tracking-tight mb-2">
+            {% if not program %}Nouveau programme{% else %}Modifier le programme{% endif %}
+        </h1>
+        <p class="text-sm font-bold text-gray-400">Configurez les règles et l'identité visuelle de ce programme.</p>
+    </div>
+    {% if programs.count > 1 and program %}
+    <div class="text-xs font-bold text-gray-400 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
+        {{ programs.count }} programmes au total
+    </div>
+    {% endif %}
+</div>
+
+{% if form.errors %}
+<div class="mb-6 bg-red-50 border border-red-100 rounded-2xl px-5 py-4">
+  <p class="text-sm font-black text-red-800 mb-2">Impossible d'enregistrer le programme :</p>
+  <ul class="text-sm text-red-700 list-disc pl-5 space-y-1">
+    {% for field, errors in form.errors.items %}
+      {% for error in errors %}
+      <li>{{ field|title }} — {{ error }}</li>
+      {% endfor %}
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}
+
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-8 items-start">
+    <!-- Form Side -->
+    <div class="xl:col-span-7 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 md:p-10">
+        <form method="post" enctype="multipart/form-data" class="space-y-8">
+            {% csrf_token %}
+{% load l10n %}
+            {% if program %}
+            <input type="hidden" name="program_id" value="{{ program.id }}">
+            {% else %}
+            <input type="hidden" name="create_new" value="1">
+            {% endif %}
+            <input type="hidden" name="points_per_unit" value="{{ form.points_per_unit.value|default:'1'|unlocalize }}">
+
+            <!-- Section: Identité -->
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h3 class="text-sm font-black text-gray-900 uppercase tracking-widest">Identité & Logo</h3>
+                </div>
+                
+                <div class="grid grid-cols-1 gap-6">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Nom du commerce (affiché sur la carte)</label>
+                        <input type="text" name="name" value="{{ form.name.value|default:'' }}" required
+                               class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                               placeholder="Ex: Ma Boutique Chic">
+                    </div>
+                    
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Logo du programme</label>
+                        <div class="flex items-center gap-4">
+                            {% if program.logo %}
+                            <div class="w-16 h-16 rounded-2xl border border-gray-100 overflow-hidden shrink-0">
+                                <img src="{{ program.logo.url }}" class="w-full h-full object-cover" alt="Actual logo">
+                            </div>
+                            {% endif %}
+                            <input type="file" name="logo" accept="image/*"
+                                   class="block w-full text-xs text-gray-500 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-gray-900 file:text-white hover:file:bg-gray-800 transition-all cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-50">
+
+            <!-- Section: Templates -->
+            {% if not program %}
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-500 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h3 class="text-sm font-black text-gray-900 uppercase tracking-widest">Démarrer avec un template</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="templates-container">
+                    <div class="text-gray-400 text-sm">Chargement des templates...</div>
+                </div>
+            </div>
+
+            <hr class="border-gray-50">
+            {% endif %}
+
+            <!-- Section: Paramètres -->
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h3 class="text-sm font-black text-gray-900 uppercase tracking-widest">Règles du Programme</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Type de programme</label>
+                        <select name="program_type" class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer">
+                            {% for val, label in form.fields.program_type.choices %}
+                            <option value="{{ val }}" {% if form.program_type.value == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label id="threshold-label" class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Objectif (ex: 10)</label>
+                        <input type="number" name="reward_threshold" value="{{ form.reward_threshold.value|default:'' }}" required
+                               class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        <p id="threshold-hint" class="mt-2 text-[10px] text-gray-400 font-medium hidden"></p>
+                    </div>
+
+                    <div id="unit-label-field">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Unité (ex: Tampons, Points)</label>
+                        <input type="text" name="unit_label" value="Tampons"
+                               class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Description de la récompense</label>
+                        <textarea name="reward_description" rows="3" required
+                                  class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                                  placeholder="Ex: Un café gratuit ou 10% de réduction">{{ form.reward_description.value|default:'' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-50">
+
+            <!-- Section: Design -->
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-8 h-8 rounded-lg bg-pink-50 text-pink-500 flex items-center justify-center">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </div>
+                    <h3 class="text-sm font-black text-gray-900 uppercase tracking-widest">Design de la Carte</h3>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Template</label>
+                        <select name="card_template" class="w-full px-5 py-4 bg-gray-50 border border-gray-100 rounded-2xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none cursor-pointer">
+                            {% for val, label in form.fields.card_template.choices %}
+                            <option value="{{ val }}" {% if form.card_template.value == val %}selected{% endif %}>{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Couleur principale</label>
+                            <div class="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3">
+                                <input type="color" id="color-primary-picker" value="{{ form.color_primary.value|default:'#111827' }}"
+                                       class="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase">Code hex</span>
+                                    <input type="text" id="color-primary-hex" value="{{ form.color_primary.value|default:'#111827' }}" placeholder="#111827" maxlength="7"
+                                           class="w-full bg-transparent text-sm font-mono font-bold text-gray-900 outline-none uppercase">
+                                </div>
+                            </div>
+                            <input type="hidden" name="color_primary" id="color-primary-input" value="{{ form.color_primary.value|default:'#111827' }}">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest pl-1 mb-2 block">Couleur secondaire</label>
+                            <div class="flex items-center gap-3 bg-gray-50 border border-gray-100 rounded-2xl px-4 py-3">
+                                <input type="color" id="color-secondary-picker" value="{{ form.color_secondary.value|default:'#4f46e5' }}"
+                                       class="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none shrink-0">
+                                <div class="flex-1 min-w-0">
+                                    <span class="text-[10px] font-bold text-gray-400 uppercase">Code hex</span>
+                                    <input type="text" id="color-secondary-hex" value="{{ form.color_secondary.value|default:'#4f46e5' }}" placeholder="#4F46E5" maxlength="7"
+                                           class="w-full bg-transparent text-sm font-mono font-bold text-gray-900 outline-none uppercase">
+                                </div>
+                            </div>
+                            <input type="hidden" name="color_secondary" id="color-secondary-input" value="{{ form.color_secondary.value|default:'#4f46e5' }}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-5 bg-primary text-white font-black text-base rounded-[1.5rem] hover:bg-primary/90 transition-all shadow-xl shadow-primary/20 flex items-center justify-center gap-3 active:scale-[0.98]">
+                {% if program %}Enregistrer les modifications{% else %}Créer le programme{% endif %}
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </form>
+    </div>
+
+    <!-- Preview Side -->
+    <div class="xl:col-span-5 space-y-6">
+        <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-10 text-white relative overflow-hidden shadow-2xl sticky top-8">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-[100px] -mr-32 -mt-32"></div>
+            
+            <div class="relative z-10">
+                <div class="text-[10px] font-black text-primary uppercase tracking-[0.2em] mb-6 border-b border-white/10 pb-4">Aperçu de la carte digitale</div>
+                
+                <!-- The Digital Card -->
+                <div id="card-preview" class="w-full aspect-[1.6/1] rounded-3xl p-8 flex flex-col justify-between shadow-2xl transition-all duration-500 overflow-hidden relative group">
+                    <div class="flex items-start justify-between relative z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center p-2 overflow-hidden">
+                                <img id="preview-logo" src="{% if program.logo %}{{ program.logo.url }}{% endif %}" class="w-full h-full object-contain {% if not program.logo %}hidden{% endif %}" alt="Logo">
+                                <svg id="preview-logo-placeholder" class="w-full h-full opacity-50 {% if program.logo %}hidden{% endif %}" viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v2h-3v-2zm-3 0h2v2h-2v-2zm3 3h3v2h-3v-2zm-3 0h2v2h-2v-2zm3 3h3v2h-3v-2zm-3 0h2v2h-2v-2z"/></svg>
+                            </div>
+                            <div id="prev-name" class="font-black text-xl tracking-tight leading-none italic">Commerce</div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center">
+                            <div class="w-1.5 h-1.5 rounded-full bg-white"></div>
+                        </div>
+                    </div>
+
+                    <div class="relative z-10">
+                        <div id="prev-reward" class="text-[11px] font-black text-white/60 uppercase tracking-widest mb-4">Récompense — Offre Spéciale</div>
+                        <div id="prev-content" class="flex items-center gap-2">
+                            <!-- Stamps/Points generated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-10 space-y-4">
+                    <div class="flex items-start gap-3">
+                        <div class="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center mt-1 shrink-0"><svg class="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg></div>
+                        <p class="text-xs font-bold text-gray-400 leading-relaxed">Cette carte apparaîtra instantanément dans le **Google Wallet** de vos clients.</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center mt-1 shrink-0"><svg class="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg></div>
+                        <p class="text-xs font-bold text-gray-400 leading-relaxed">Les modifications sont appliquées en temps réel sur toutes les cartes déjà distribuées.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function normalizeHexColor(value, fallback) {
+        if (!value) return fallback;
+        let v = value.trim();
+        if (!v.startsWith('#')) v = '#' + v;
+        if (/^#[0-9A-Fa-f]{6}$/.test(v)) return v.toUpperCase();
+        if (/^#[0-9A-Fa-f]{3}$/.test(v)) {
+            return ('#' + v[1] + v[1] + v[2] + v[2] + v[3] + v[3]).toUpperCase();
+        }
+        return null;
+    }
+
+    function setPrimaryColor(value) {
+        const hex = normalizeHexColor(value, '#111827');
+        if (!hex) return;
+        document.getElementById('color-primary-picker').value = hex;
+        document.getElementById('color-primary-hex').value = hex;
+        document.getElementById('color-primary-input').value = hex;
+        updatePreview();
+    }
+
+    function setSecondaryColor(value) {
+        const hex = normalizeHexColor(value, '#4F46E5');
+        if (!hex) return;
+        document.getElementById('color-secondary-picker').value = hex;
+        document.getElementById('color-secondary-hex').value = hex;
+        document.getElementById('color-secondary-input').value = hex;
+        updatePreview();
+    }
+
+    const nameInput = document.querySelector('input[name="name"]');
+    const typeInput = document.querySelector('select[name="program_type"]');
+    const templateInput = document.querySelector('select[name="card_template"]');
+    const colorInput = document.getElementById('color-primary-input');
+    const secColorInput = document.getElementById('color-secondary-input');
+    const rewardInput = document.querySelector('textarea[name="reward_description"]');
+    const thresholdInput = document.querySelector('input[name="reward_threshold"]');
+
+    function updatePreview() {
+        const card = document.getElementById('card-preview');
+        const name = nameInput.value || 'Votre Commerce';
+        const tpl = templateInput.value;
+        const type = typeInput.value;
+        const color = colorInput.value;
+        const secColor = secColorInput.value;
+        const threshold = parseInt(thresholdInput.value) || 10;
+        const reward = rewardInput.value || 'Votre récompense ici...';
+
+        document.getElementById('prev-name').textContent = name;
+        
+        // Base styling for the card
+        card.className = "w-full aspect-[1.6/1] rounded-[2rem] p-8 flex flex-col justify-between shadow-2xl transition-all duration-500 overflow-hidden relative group";
+        card.style = ""; // reset
+        
+        if(tpl === 'classic') {
+            card.style.background = `linear-gradient(135deg, ${color}, ${secColor})`;
+            card.style.color = 'white';
+        } else if(tpl === 'glass') {
+            card.style.background = color;
+            card.style.color = 'white';
+            card.classList.add('border', 'border-white/20');
+            card.style.boxShadow = `inset 0 0 60px ${secColor}80, 0 20px 40px rgba(0,0,0,0.3)`;
+        } else if(tpl === 'bold') {
+            card.style.background = "white";
+            card.style.color = "black";
+            card.style.border = `6px solid ${color}`;
+            card.style.boxShadow = `12px 12px 0 ${secColor}`;
+            card.style.borderRadius = "1.5rem";
+            document.getElementById('prev-name').style.color = color;
+        } else if(tpl === 'luxury') {
+            card.style.background = "#050505";
+            card.style.color = "white";
+            card.style.border = "1px solid rgba(255,255,255,0.1)";
+            card.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
+            document.getElementById('prev-name').style.fontStyle = "italic";
+            document.getElementById('prev-name').style.color = secColor;
+        }
+
+        let unit = document.querySelector('input[name="unit_label"]').value || "Tampons";
+        document.getElementById('prev-reward').innerHTML = `<span class="opacity-50">Objectif : ${threshold} ${unit}</span> <br/> <span class="text-white">${reward}</span>`;
+        
+        const contentDiv = document.getElementById('prev-content');
+        if(type === 'visits') {
+            let gridHtml = `<div class="grid grid-cols-5 gap-2 w-full max-w-[200px]">`;
+            const displayStamps = Math.min(threshold, 10);
+            for(let i=0; i<displayStamps; i++) {
+                let active = i < 4;
+                let bg = "";
+                if(tpl === 'bold') {
+                    bg = active ? color : "#f3f4f6";
+                } else {
+                    bg = active ? "rgba(255,255,255,1)" : "rgba(255,255,255,0.15)";
+                }
+                gridHtml += `<div class="aspect-square rounded-full flex items-center justify-center transition-all duration-300" style="background:${bg}">
+                    ${active ? '<svg class="w-3 h-3 text-primary" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"/></svg>' : ''}
+                </div>`;
+            }
+            gridHtml += `</div>`;
+            contentDiv.innerHTML = gridHtml;
+        } else if (type === 'spend') {
+            let accent = (tpl === 'bold') ? color : (tpl === 'luxury' ? secColor : 'white');
+            contentDiv.innerHTML = `<div class="text-3xl font-black italic tracking-tighter" style="color:${accent}">2 000 / ${threshold.toLocaleString('fr-FR')} FCFA</div>`;
+        } else {
+            let accent = (tpl === 'bold') ? color : (tpl === 'luxury' ? secColor : 'white');
+            contentDiv.innerHTML = `<div class="text-4xl font-black italic tracking-tighter" style="color:${accent}">42.5 ${unit}</div>`;
+        }
+    }
+
+    function updateTypeLabels() {
+        const type = typeInput.value;
+        const thresholdLabel = document.getElementById('threshold-label');
+        const thresholdHint = document.getElementById('threshold-hint');
+        const unitField = document.getElementById('unit-label-field');
+
+        if (type === 'spend') {
+            thresholdLabel.textContent = 'Montant cible pour la récompense (ex: 10000)';
+            thresholdHint.textContent = 'Chaque achat saisi au scanner s\'ajoute au cumul (ex. 2 000 FCFA sur 10 000 FCFA).';
+            thresholdHint.classList.remove('hidden');
+            unitField.classList.add('hidden');
+        } else if (type === 'visits') {
+            thresholdLabel.textContent = 'Nombre de tampons requis';
+            thresholdHint.classList.add('hidden');
+            unitField.classList.remove('hidden');
+        } else {
+            thresholdLabel.textContent = 'Points requis pour la récompense';
+            thresholdHint.classList.add('hidden');
+            unitField.classList.remove('hidden');
+        }
+    }
+
+    // Logo live preview
+    const logoInput = document.querySelector('input[name="logo"]');
+    const previewLogo = document.getElementById('preview-logo');
+    const previewLogoPlaceholder = document.getElementById('preview-logo-placeholder');
+
+    {% if not program %}
+    logoInput?.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                if (previewLogo) {
+                    previewLogo.src = e.target.result;
+                    previewLogo.classList.remove('hidden');
+                    if (previewLogoPlaceholder) previewLogoPlaceholder.classList.add('hidden');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    {% endif %}
+
+    // Load templates
+    const templatesContainer = document.getElementById('templates-container');
+    if (templatesContainer) {
+        fetch('/templates/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.templates && data.templates.length > 0) {
+                    templatesContainer.innerHTML = '';
+                    data.templates.forEach(template => {
+                        const templateCard = document.createElement('div');
+                        templateCard.className = 'bg-gray-50 border border-gray-100 rounded-xl p-4 cursor-pointer hover:border-purple-300 hover:bg-purple-50 transition-all';
+                        templateCard.innerHTML = `
+                            <div class="font-bold text-gray-900 mb-1">${template.name}</div>
+                            <div class="text-xs text-gray-500 mb-2">${template.description}</div>
+                            <div class="text-xs text-gray-400">
+                                <span class="bg-white px-2 py-1 rounded">${template.reward_threshold} ${template.unit_label}</span>
+                            </div>
+                        `;
+                        templateCard.onclick = function() {
+                            applyTemplate(template.id);
+                        };
+                        templatesContainer.appendChild(templateCard);
+                    });
+                } else {
+                    templatesContainer.innerHTML = '<div class="text-gray-400 text-sm">Aucun template disponible</div>';
+                }
+            })
+            .catch(err => {
+                templatesContainer.innerHTML = '<div class="text-red-400 text-sm">Erreur lors du chargement des templates</div>';
+            });
+    }
+
+    function applyTemplate(templateId) {
+        fetch('/templates/' + templateId + '/apply/')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.template) {
+                    const tpl = data.template;
+                    // Apply template values to form
+                    const programTypeSelect = document.querySelector('select[name="program_type"]');
+                    if (programTypeSelect) programTypeSelect.value = tpl.program_type;
+                    
+                    const rewardThresholdInput = document.querySelector('input[name="reward_threshold"]');
+                    if (rewardThresholdInput) rewardThresholdInput.value = tpl.reward_threshold;
+                    
+                    const rewardDescriptionInput = document.querySelector('input[name="reward_description"]');
+                    if (rewardDescriptionInput) rewardDescriptionInput.value = tpl.reward_description;
+                    
+                    const unitLabelInput = document.querySelector('input[name="unit_label"]');
+                    if (unitLabelInput) unitLabelInput.value = tpl.unit_label;
+                    
+                    const colorPrimaryInput = document.querySelector('input[name="color_primary"]');
+                    if (colorPrimaryInput) colorPrimaryInput.value = tpl.color_primary;
+                    
+                    const colorSecondaryInput = document.querySelector('input[name="color_secondary"]');
+                    if (colorSecondaryInput) colorSecondaryInput.value = tpl.color_secondary;
+                    
+                    const cardTemplateSelect = document.querySelector('select[name="card_template"]');
+                    if (cardTemplateSelect) cardTemplateSelect.value = tpl.card_template;
+                    
+                    // Trigger preview update
+                    updatePreview();
+                }
+            })
+            .catch(err => {
+                console.error('Erreur lors de l\'application du template:', err);
+            });
+    }
+
+    [nameInput, typeInput, templateInput, rewardInput, thresholdInput, 
+     document.querySelector('input[name="unit_label"]')].forEach(el => el?.addEventListener('input', updatePreview));
+    typeInput?.addEventListener('change', () => { updateTypeLabels(); updatePreview(); });
+    document.getElementById('color-primary-picker')?.addEventListener('input', e => setPrimaryColor(e.target.value));
+    document.getElementById('color-primary-hex')?.addEventListener('input', e => setPrimaryColor(e.target.value));
+    document.getElementById('color-secondary-picker')?.addEventListener('input', e => setSecondaryColor(e.target.value));
+    document.getElementById('color-secondary-hex')?.addEventListener('input', e => setSecondaryColor(e.target.value));
+    
+    updateTypeLabels();
+    updatePreview();
+</script>
+
+{% endblock %}

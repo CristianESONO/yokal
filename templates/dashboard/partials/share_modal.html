@@ -1,0 +1,55 @@
+{% if merchant.slug %}
+<div id="qr-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onclick="closeQrModal(event)">
+  <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl text-center" onclick="event.stopPropagation()">
+    <h3 class="text-lg font-black text-gray-900 mb-2">Scanner pour s'inscrire</h3>
+    <p class="text-xs text-gray-400 font-medium mb-6">Vos clients scannent ce code pour choisir leurs programmes et adhérer</p>
+    <img src="{% url 'loyalty:merchant_qr' merchant_slug=merchant.slug %}" alt="QR Code d'inscription" class="w-64 h-64 mx-auto rounded-2xl border border-gray-100 bg-white">
+    <p class="share-link-text text-[10px] text-gray-400 font-medium mt-4 break-all">{{ request.scheme }}://{{ request.get_host }}{% url 'loyalty:merchant_enroll' merchant_slug=merchant.slug %}</p>
+    <div class="mt-6 flex gap-3">
+      <button type="button" onclick="copyShareLink()" class="flex-1 px-4 py-3 bg-primary text-white font-bold rounded-xl hover:bg-primary/90 transition-all">Copier le lien</button>
+      <button type="button" onclick="closeQrModal()" class="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold rounded-xl transition-all">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function getShareLink() {
+    return document.querySelector('.share-link-text')?.textContent?.trim() || '';
+}
+
+function copyShareLink() {
+    const text = getShareLink();
+    if (!text) return;
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => alert('Lien copié !')).catch(() => fallbackCopy(text));
+    } else {
+        fallbackCopy(text);
+    }
+}
+
+function fallbackCopy(text) {
+    const dummy = document.createElement('input');
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    dummy.select();
+    document.execCommand('copy');
+    document.body.removeChild(dummy);
+    alert('Lien copié !');
+}
+
+function openQrModal() {
+    const modal = document.getElementById('qr-modal');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeQrModal(event) {
+    if (event && event.target !== event.currentTarget) return;
+    const modal = document.getElementById('qr-modal');
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+</script>
+{% endif %}

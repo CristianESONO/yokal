@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% block title %}{{ program.merchant.business_name }} — Programme de fidélité{% endblock %}
+
+{% block extra_head %}
+<style>
+  :root {
+    --p: {{ program.color_primary|default:'#111827' }};
+    --s: {{ program.color_secondary|default:'#4f46e5' }};
+  }
+  
+  body { 
+    background: #F3F4F6; 
+    color: #111827;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+
+  .layout-wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 40px 20px 60px;
+  }
+
+  .merchant-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .merchant-logo {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    overflow: hidden;
+    padding: 4px;
+  }
+
+  .merchant-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  /* Card Preview */
+  .preview-container {
+    background: white;
+    border-radius: 28px;
+    padding: 28px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    margin-bottom: 20px;
+  }
+
+  .wallet-card {
+    width: 100%;
+    aspect-ratio: 1.6 / 1;
+    border-radius: 22px;
+    padding: 22px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, var(--p), var(--s));
+  }
+
+  .tpl-glass { 
+    background: var(--p);
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .tpl-bold {
+    background: white !important;
+    color: black !important;
+    border: 4px solid var(--p);
+    box-shadow: 8px 8px 0 var(--s);
+  }
+  .tpl-luxury { background: #050505; border: 1px solid rgba(255,255,255,0.1); }
+
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .card-brand { display: flex; align-items: center; gap: 10px; }
+  .card-mini-logo {
+    width: 30px; height: 30px;
+    border-radius: 7px;
+    background: rgba(255,255,255,0.2);
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; padding: 3px;
+  }
+  .card-mini-logo img { width: 100%; height: 100%; object-fit: contain; }
+  .card-name { font-size: 16px; font-weight: 900; letter-spacing: -0.02em; }
+  .card-label { font-size: 7px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.2em; opacity: 0.5; }
+
+  /* Stamps Preview */
+  .stamps-row {
+    display: flex;
+    gap: 5px;
+    width: 100%;
+  }
+  .stamp-dot {
+    flex: 1;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+  }
+
+  /* Enrollment Form */
+  .form-container {
+    background: white;
+    border-radius: 28px;
+    padding: 32px 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  }
+
+  .form-title {
+    font-size: 24px;
+    font-weight: 900;
+    color: #111827;
+    margin-bottom: 6px;
+    text-align: center;
+    letter-spacing: -0.03em;
+  }
+
+  .form-subtitle {
+    font-size: 13px;
+    font-weight: 500;
+    color: #6B7280;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 7px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 14px 16px;
+    background: #F9FAFB;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    outline: none;
+    transition: all 0.2s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    box-sizing: border-box;
+  }
+
+  .form-input:focus {
+    border-color: var(--p);
+    background: white;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--p) 10%, transparent);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 17px;
+    background: var(--p);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 24px;
+    transition: all 0.2s;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.01em;
+  }
+
+  .submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+  .submit-btn:active { transform: scale(0.98); }
+
+  .form-disclaimer {
+    font-size: 11px;
+    font-weight: 500;
+    color: #9CA3AF;
+    text-align: center;
+    margin-top: 14px;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="layout-wrap">
+
+  <!-- Merchant Header -->
+  <div class="merchant-header">
+    <div class="merchant-logo">
+      {% if program.logo %}
+        <img src="{{ program.logo.url }}" alt="{{ program.merchant.business_name }}">
+      {% else %}
+        <span style="font-size:28px;font-weight:900;color:#111827;">{{ program.merchant.business_name|first }}</span>
+      {% endif %}
+    </div>
+    <h1 style="font-size:20px;font-weight:900;color:#111827;margin-bottom:4px;letter-spacing:-0.03em;">{{ program.merchant.business_name }}</h1>
+    <p style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.12em;">Programme de fidélité</p>
+  </div>
+
+  <!-- Card Preview (no customer name) -->
+  <div class="preview-container">
+    <div class="wallet-card tpl-{{ program.card_template }}">
+      <div class="card-top">
+        <div class="card-brand">
+          <div class="card-mini-logo">
+            {% if program.logo %}
+              <img src="{{ program.logo.url }}" alt="Logo">
+            {% else %}
+              <span style="font-size:12px;font-weight:900;color:rgba(255,255,255,0.6);">{{ program.merchant.business_name|first }}</span>
+            {% endif %}
+          </div>
+          <div class="card-name">{{ program.merchant.business_name }}</div>
+        </div>
+        <div class="card-label">FIDÉLITÉ</div>
+      </div>
+
+      <div>
+        <div style="font-size:11px;font-weight:700;opacity:0.6;margin-bottom:3px;">Ta carte t'attend 👇</div>
+      </div>
+
+      <div>
+        <div style="font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;opacity:0.6;margin-bottom:6px;">
+          {{ program.reward_threshold }} {{ program.unit_label }} pour {{ program.reward_description }}
+        </div>
+        <div class="stamps-row">
+          {% for i in "1234567890"|make_list %}
+            <div class="stamp-dot"></div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enrollment Form -->
+  <div class="form-container">
+    <h2 class="form-title">Obtiens ta carte</h2>
+    <p class="form-subtitle">Remplis ces infos pour recevoir ta carte de fidélité</p>
+
+    {% if messages %}
+    <div style="margin-bottom:16px;">
+      {% for msg in messages %}
+      <div style="padding:12px 16px;border-radius:12px;font-size:13px;font-weight:700;
+        {% if msg.tags == 'error' %}background:#FEF2F2;color:#DC2626;border:1px solid #FCA5A5;
+        {% else %}background:#F0FDF4;color:#16A34A;border:1px solid #86EFAC;{% endif %}">
+        {{ msg }}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Prénom</label>
+          <input type="text" name="first_name" placeholder="Marie" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom</label>
+          <input type="text" name="last_name" placeholder="Dupont" class="form-input">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Nom complet</label>
+        <input type="text" name="customer_name" placeholder="Marie Dupont" class="form-input" required>
+        <div style="font-size:10px;color:#9CA3AF;margin-top:4px;font-weight:600;">Ce nom apparaîtra sur votre carte</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Téléphone</label>
+        <div style="display:flex;gap:8px;">
+          <div style="background:#F9FAFB;border:1.5px solid #E5E7EB;border-radius:14px;padding:14px 14px;font-size:14px;font-weight:700;color:#6B7280;white-space:nowrap;">
+            🇸🇳 +221
+          </div>
+          <input type="tel" name="customer_phone" placeholder="77 000 00 00" class="form-input" required style="flex:1;">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email (Optionnel)</label>
+        <input type="email" name="customer_email" placeholder="marie@exemple.com" class="form-input">
+        <div style="font-size:10px;color:#9CA3AF;margin-top:4px;font-weight:600;">Pour recevoir votre carte par email et Google Wallet</div>
+      </div>
+
+      <button type="submit" class="submit-btn">
+        Créer ma carte
+        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7l5 5m0 0l-5 5m5-5H6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <p class="form-disclaimer">En continuant, tu acceptes de recevoir ta carte de fidélité digitale</p>
+    </form>
+  </div>
+
+  <div style="text-align:center;margin-top:32px;">
+    <p style="font-size:9px;font-weight:800;color:#D1D5DB;text-transform:uppercase;letter-spacing:0.3em;">Propulsé par Yokalma</p>
+  </div>
+
+</div>
+
+<script>
+// Auto-fill the combined name from first+last name fields
+const first = document.querySelector('input[name="first_name"]');
+const last = document.querySelector('input[name="last_name"]');
+const full = document.querySelector('input[name="customer_name"]');
+
+function syncName() {
+  const f = first.value.trim();
+  const l = last.value.trim();
+  if (f || l) {
+    full.value = [f, l].filter(Boolean).join(' ');
+  }
+}
+
+first.addEventListener('input', syncName);
+last.addEventListener('input', syncName);
+</script>
+
+{% endblock %}

@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+{% block title %}Connexion — Yokalma{% endblock %}
+{% block extra_head %}
+{% endblock %}
+{% block body %}
+{% load static %}
+<div class="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white">
+  
+  <!-- Left: Form Panel -->
+  <div class="flex flex-col px-8 py-10 lg:px-16 xl:px-24 justify-center">
+    <!-- Header with Logo & Register Link -->
+    <div class="flex justify-between items-center mb-16 max-w-sm mx-auto w-full">
+      {% include 'partials/brand_logo.html' with height=40 %}
+      <a href="{% url 'accounts:register' %}" class="text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors">Créer un compte</a>
+    </div>
+    
+    <!-- Form Content -->
+    <div class="max-w-sm mx-auto w-full">
+      <div class="mb-8">
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">Content de vous revoir</h1>
+        <p class="text-sm text-gray-500">Connectez-vous pour accéder à votre dashboard.</p>
+      </div>
+      
+      <form method="post" class="space-y-5">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="flex flex-col gap-1.5">
+          <label class="text-sm font-medium text-gray-700">{{ field.label }}</label>
+          <input type="{{ field.field.widget.input_type }}" name="{{ field.html_name }}" value="{{ field.value|default:'' }}"
+                 class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none text-sm text-gray-900"
+                 placeholder="{{ field.label }}" {% if field.field.required %}required{% endif %} {% if forloop.first %}autofocus{% endif %}>
+          {% if field.errors %}<div class="text-xs text-red-500 mt-1">{{ field.errors|join:', ' }}</div>{% endif %}
+        </div>
+        {% endfor %}
+        
+        <div class="pt-2">
+          <button type="submit" class="w-full bg-primary hover:bg-primary-hover text-white rounded-xl py-3 text-sm font-medium transition-colors cursor-pointer border-none">
+            Se connecter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Right: Promotional Panel (Desktop only) -->
+  <div class="hidden lg:flex flex-col justify-center items-center relative overflow-hidden bg-slate-900 px-8 py-12">
+    <!-- Background Accents -->
+    <div class="absolute inset-0 opacity-20" style="background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,0.15) 1px, transparent 0); background-size:32px 32px;"></div>
+    <div class="absolute top-1/4 -left-20 w-80 h-80 bg-primary/20 rounded-full blur-[60px]"></div>
+    <div class="absolute bottom-1/4 -right-20 w-80 h-80 bg-purple-500/20 rounded-full blur-[60px]"></div>
+    
+    <div class="relative z-10 text-center max-w-md mx-auto mb-10">
+      <h2 class="text-3xl font-bold tracking-tight text-white mb-4">Gérez votre fidélité simplement</h2>
+      <p class="text-slate-400 text-sm">Suivez vos clients, analysez vos performances et développez votre commerce avec notre solution professionnelle.</p>
+    </div>
+    
+    <!-- Mockup Card -->
+    <div class="relative z-10 bg-gradient-to-br from-primary to-primary-hover rounded-2xl p-6 shadow-2xl w-full max-w-sm text-white transform rotate-2 hover:rotate-0 transition-transform duration-500">
+      <div class="flex justify-between items-start mb-8">
+        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center p-1.5">
+          <img src="{% static 'img/logo-yokalma.png' %}?v=4" alt="Yokalma" class="max-h-8 w-auto object-contain">
+        </div>
+      </div>
+      <div class="bg-white/10 rounded-xl p-4 mb-4 backdrop-blur-sm border border-white/5">
+        <div class="text-sm text-white/80 mb-1">Votre commerce</div>
+        <div class="text-lg font-bold">Boulangerie Martin</div>
+      </div>
+      <div class="flex justify-between items-end border-t border-white/20 pt-4">
+        <div>
+          <div class="text-xs text-white/60 mb-1">Client Fidèle</div>
+          <div class="text-sm font-semibold">4 / 10 tampons</div>
+        </div>
+        <div class="flex gap-1.5">
+          <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-white"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-white/30"></div>
+          <div class="w-2.5 h-2.5 rounded-full bg-white/30"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

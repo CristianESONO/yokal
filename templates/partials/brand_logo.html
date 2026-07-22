@@ -1,0 +1,4 @@
+{% load static %}
+<a href="{% if href %}{{ href }}{% else %}{% url 'loyalty:landing' %}{% endif %}" class="inline-flex items-center shrink-0 {{ class }}"{% if aria_label %} aria-label="{{ aria_label }}"{% endif %}>
+  <img src="{% static 'img/logo-yokalma.png' %}?v=7" alt="Yokalma" class="block w-auto object-contain object-left" style="height:{{ height|default:40 }}px;" width="300" height="125">
+</a>

@@ -1,0 +1,19 @@
+{% extends 'dashboard/base.html' %}
+{% block dash_content %}
+<div class="flex items-center justify-between mb-8">
+  <div>
+    <h1 class="text-3xl font-bold text-gray-900 mb-1">Scanner</h1>
+    <p class="text-sm text-gray-500">Scannez les QR codes de vos clients</p>
+  </div>
+</div>
+
+<div class="bg-white rounded-2xl p-10 border border-gray-100 shadow-[0_2px_10px_-4px_rgba(0,0,0,0.05)] text-center max-w-2xl mx-auto mt-10">
+  <div class="text-6xl mb-6">📷</div>
+  <h2 class="text-xl font-bold text-gray-900 mb-2">Scanner un QR code</h2>
+  <p class="text-sm text-gray-500 mb-8 max-w-sm mx-auto">Utilisez la caméra pour scanner le QR code du client et ajouter des tampons ou valider des récompenses.</p>
+  <a href="{% url 'loyalty:stamp_scanner' %}" class="inline-flex items-center justify-center px-6 py-3 bg-gray-900 border border-transparent text-white text-sm font-medium rounded-xl hover:bg-gray-800 transition-colors shadow-sm">
+    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="8" y="8" width="8" height="8" rx="1" stroke-width="2"/></svg>
+    Ouvrir le scanner
+  </a>
+</div>
+{% endblock %}

@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}{{ merchant.business_name }} — Rejoindre le programme{% endblock %}
+
+{% block extra_head %}
+<style>
+  body { background: #F3F4F6; color: #111827; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .layout-wrap { max-width: 520px; margin: 0 auto; padding: 40px 20px 60px; }
+  .merchant-header { display: flex; flex-direction: column; align-items: center; margin-bottom: 28px; text-align: center; }
+  .merchant-logo {
+    width: 72px; height: 72px; border-radius: 18px; background: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07); display: flex; align-items: center;
+    justify-content: center; margin-bottom: 14px; overflow: hidden; padding: 4px;
+  }
+  .section-card {
+    background: white; border-radius: 28px; padding: 28px 24px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03); margin-bottom: 16px;
+  }
+  .section-title { font-size: 22px; font-weight: 900; letter-spacing: -0.03em; margin-bottom: 6px; }
+  .section-subtitle { font-size: 13px; color: #6B7280; margin-bottom: 20px; }
+  .program-option {
+    display: flex; align-items: flex-start; gap: 14px; padding: 16px;
+    border: 1.5px solid #E5E7EB; border-radius: 16px; margin-bottom: 10px; cursor: pointer;
+  }
+  .program-option:hover { border-color: #111827; background: #FAFAFA; }
+  .program-option input { margin-top: 4px; width: 18px; height: 18px; accent-color: #111827; }
+  .program-name { font-size: 15px; font-weight: 800; color: #111827; }
+  .program-meta { font-size: 11px; color: #9CA3AF; font-weight: 600; margin-top: 4px; }
+  .select-all-btn {
+    font-size: 12px; font-weight: 800; color: #111827; background: #F3F4F6;
+    border: none; border-radius: 10px; padding: 8px 14px; cursor: pointer; margin-bottom: 14px;
+  }
+  .form-label {
+    display: block; font-size: 11px; font-weight: 800; color: #374151;
+    text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px;
+  }
+  .form-input {
+    width: 100%; padding: 14px 16px; background: #F9FAFB; border: 1.5px solid #E5E7EB;
+    border-radius: 14px; font-size: 15px; font-weight: 600; color: #111827; outline: none;
+    box-sizing: border-box; font-family: inherit;
+  }
+  .form-input:focus { border-color: #111827; background: white; }
+  .form-group { margin-bottom: 16px; }
+  .submit-btn {
+    width: 100%; padding: 17px; background: #111827; color: white; border: none;
+    border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; margin-top: 8px;
+  }
+  .errorlist { list-style: none; padding: 0; margin: 0 0 12px; color: #DC2626; font-size: 12px; font-weight: 700; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="layout-wrap">
+  <div class="merchant-header">
+    <div class="merchant-logo">
+      {% if merchant.logo %}
+        <img src="{{ merchant.logo.url }}" alt="{{ merchant.business_name }}">
+      {% else %}
+        <span style="font-size:28px;font-weight:900;">{{ merchant.business_name|first }}</span>
+      {% endif %}
+    </div>
+    <h1 style="font-size:22px;font-weight:900;margin-bottom:4px;">{{ merchant.business_name }}</h1>
+    <p style="font-size:11px;font-weight:700;color:#9CA3AF;text-transform:uppercase;letter-spacing:0.12em;">Programmes de fidélité</p>
+  </div>
+
+  {% if subscription_invalid %}
+  <div class="section-card" style="text-align:center;">
+    <p style="font-weight:700;color:#DC2626;">Inscriptions temporairement indisponibles.</p>
+  </div>
+  {% else %}
+  <form method="post">
+    {% csrf_token %}
+
+    <div class="section-card">
+      <h2 class="section-title">Choisissez vos programmes</h2>
+      <p class="section-subtitle">Sélectionnez un ou plusieurs programmes pour votre adhésion.</p>
+
+      {% if programs|length > 1 %}
+      <button type="button" class="select-all-btn" onclick="toggleAllPrograms(true)">Tout sélectionner</button>
+      {% endif %}
+
+      {% if form.programs.errors %}
+      <ul class="errorlist">{% for e in form.programs.errors %}<li>{{ e }}</li>{% endfor %}</ul>
+      {% endif %}
+
+      {% for p in programs %}
+      <label class="program-option">
+        <input type="checkbox" name="programs" value="{{ p.id }}"
+          {% if form.programs.value %}
+            {% if p.id|stringformat:"s" in form.programs.value %}checked{% endif %}
+          {% elif programs|length == 1 %}checked{% endif %}>
+        <div>
+          <div class="program-name">{{ p.name }}</div>
+          <div class="program-meta">{{ p.reward_threshold }} {{ p.unit_label }} → {{ p.reward_description }}</div>
+        </div>
+      </label>
+      {% endfor %}
+    </div>
+
+    <div class="section-card">
+      <h2 class="section-title">Vos informations</h2>
+      <p class="section-subtitle">Ces informations seront utilisées pour créer votre/vos carte(s).</p>
+
+      <div class="form-group">
+        <label class="form-label">Nom complet</label>
+        <input type="text" name="customer_name" class="form-input" placeholder="Marie Dupont" required
+               value="{{ form.customer_name.value|default:'' }}">
+        {% if form.customer_name.errors %}<ul class="errorlist">{% for e in form.customer_name.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Téléphone</label>
+        <input type="tel" name="customer_phone" class="form-input" placeholder="77 000 00 00" required
+               value="{{ form.customer_phone.value|default:'' }}">
+        {% if form.customer_phone.errors %}<ul class="errorlist">{% for e in form.customer_phone.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email (optionnel)</label>
+        <input type="email" name="customer_email" class="form-input" placeholder="marie@exemple.com"
+               value="{{ form.customer_email.value|default:'' }}">
+      </div>
+
+      <button type="submit" class="submit-btn">Envoyer ma demande d'adhésion</button>
+    </div>
+  </form>
+  {% endif %}
+
+  <div style="text-align:center;margin-top:32px;">
+    <p style="font-size:9px;font-weight:800;color:#D1D5DB;text-transform:uppercase;letter-spacing:0.3em;">Propulsé par Yokalma</p>
+  </div>
+</div>
+
+<script>
+function toggleAllPrograms(checked) {
+  document.querySelectorAll('input[name="programs"]').forEach(cb => { cb.checked = checked; });
+}
+</script>
+{% endblock %}

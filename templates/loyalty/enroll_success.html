@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}Demande envoyée — {{ merchant.business_name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  body { background: #F3F4F6; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 48px 20px; text-align: center; }
+  .card-box {
+    background: white;
+    border-radius: 28px;
+    padding: 36px 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+    margin-bottom: 20px;
+  }
+  .icon {
+    width: 64px; height: 64px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 28px;
+  }
+  .icon-pending { background: #FEF3C7; }
+  .icon-success { background: #D1FAE5; }
+  h1 { font-size: 24px; font-weight: 900; margin-bottom: 8px; color: #111827; }
+  p { font-size: 14px; color: #6B7280; font-weight: 500; line-height: 1.6; }
+  .program-list { text-align: left; margin-top: 24px; }
+  .program-item {
+    padding: 14px 16px; border: 1px solid #E5E7EB; border-radius: 14px;
+    margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
+  }
+  .program-item strong { font-size: 14px; color: #111827; }
+  .badge {
+    font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 4px 10px; border-radius: 999px;
+  }
+  .badge-pending { background: #FEF3C7; color: #B45309; }
+  .badge-approved { background: #D1FAE5; color: #047857; }
+  .link-btn {
+    display: inline-block; margin-top: 8px; padding: 10px 16px;
+    background: #111827; color: white; border-radius: 12px;
+    font-size: 13px; font-weight: 800; text-decoration: none;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="wrap">
+  <div class="card-box">
+    {% if pending %}
+    <div class="icon icon-pending">⏳</div>
+    <h1>Demande envoyée !</h1>
+    <p>{{ merchant.business_name }} va examiner votre inscription. Vous recevrez l'accès à votre carte une fois validée.</p>
+    {% else %}
+    <div class="icon icon-success">✓</div>
+    <h1>Inscription réussie !</h1>
+    <p>Vos cartes de fidélité sont prêtes.</p>
+    {% endif %}
+
+    <div class="program-list">
+      {% for card in cards %}
+      <div class="program-item">
+        <div>
+          <strong>{{ card.program.name }}</strong>
+          {% if card.is_membership_usable %}
+          <br><a href="{{ card.get_absolute_url }}" class="link-btn">Voir ma carte</a>
+          {% endif %}
+        </div>
+        {% if card.is_pending_membership %}
+        <span class="badge badge-pending">En attente</span>
+        {% elif card.membership_status == 'approved' %}
+        <span class="badge badge-approved">Active</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

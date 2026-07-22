@@ -1,0 +1,575 @@
+{% extends 'dashboard/base.html' %}
+{% load static %}
+
+{% block dash_content %}
+<div class="relative min-h-screen">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+            <span>Dashboard</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span class="text-gray-900">Statistiques</span>
+        </div>
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-black text-gray-900 mb-1">Statistiques</h1>
+                <p class="text-sm text-gray-500 font-medium">Analysez les performances de votre programme</p>
+            </div>
+            
+            <!-- Filter Pills -->
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+                <a href="?period=1" class="px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all {% if period == '1' %}bg-primary text-white shadow-lg shadow-primary/20{% else %}bg-white text-gray-500 border border-gray-100 hover:border-gray-300{% endif %}">Aujourd'hui</a>
+                <a href="?period=7" class="px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all {% if period == '7' %}bg-primary text-white shadow-lg shadow-primary/20{% else %}bg-white text-gray-500 border border-gray-100 hover:border-gray-300{% endif %}">7 jours</a>
+                <a href="?period=30" class="px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all {% if period == '30' %}bg-primary text-white shadow-lg shadow-primary/20{% else %}bg-white text-gray-500 border border-gray-100 hover:border-gray-300{% endif %}">30 jours</a>
+                <a href="?period=90" class="px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all {% if period == '90' %}bg-primary text-white shadow-lg shadow-primary/20{% else %}bg-white text-gray-500 border border-gray-100 hover:border-gray-300{% endif %}">90 jours</a>
+                <a href="?period=365" class="px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all {% if period == '365' %}bg-primary text-white shadow-lg shadow-primary/20{% else %}bg-white text-gray-500 border border-gray-100 hover:border-gray-300{% endif %}">Cette année</a>
+                <button onclick="toggleCustomPanel()" class="px-5 py-2.5 rounded-full text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 {% if period == 'custom' %}bg-primary text-white shadow-lg shadow-primary/20{% else %}bg-white text-gray-500 border border-gray-100 hover:border-gray-300{% endif %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Personnalisé
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Date Panel (Hidden by default) -->
+    <div id="customDatePanel" class="{% if period == 'custom' %}flex{% else %}hidden{% endif %} flex-col md:flex-row items-end gap-6 bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm mb-8 transition-all duration-300">
+        <div class="flex-1 w-full">
+            <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Date de début</label>
+            <input type="date" id="startDate" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" value="{{ request.GET.start }}">
+        </div>
+        <div class="flex-1 w-full">
+            <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Date de fin</label>
+            <input type="date" id="endDate" class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-bold text-gray-900 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none" value="{{ request.GET.end }}">
+        </div>
+        <button onclick="applyCustomRange()" class="w-full md:w-auto px-10 py-4 bg-gray-100 text-gray-400 font-black rounded-2xl flex items-center justify-center gap-2 hover:bg-primary hover:text-white transition-all group">
+            <svg class="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Appliquer
+        </button>
+    </div>
+
+    <!-- Top Summary Cards -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm">
+            <div class="flex items-start justify-between mb-4">
+                <span class="text-sm font-bold text-gray-400">Clients totaux</span>
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+            </div>
+            <div class="text-4xl font-black text-gray-900">{{ total_customers }}</div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm">
+            <div class="flex items-start justify-between mb-4">
+                <span class="text-sm font-bold text-gray-400">Nouveaux clients</span>
+                <div class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+            </div>
+            <div class="text-4xl font-black text-gray-900 mb-3">{{ new_clients_current }}</div>
+            <div class="flex items-center gap-2">
+                {% if new_clients_diff >= 0 %}
+                <span class="inline-flex items-center gap-1 text-[11px] text-green-500 font-bold bg-green-50 px-2 py-1 rounded-lg">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 10l7-7m0 0l7 7m-7-7v18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    +{{ new_clients_diff }}%
+                </span>
+                {% else %}
+                <span class="inline-flex items-center gap-1 text-[11px] text-red-500 font-bold bg-red-50 px-2 py-1 rounded-lg">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7m0 0l-7-7m7 7V3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {{ new_clients_diff }}%
+                </span>
+                {% endif %}
+                <span class="text-[11px] text-gray-400 font-medium whitespace-nowrap">vs période précédente</span>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm">
+            <div class="flex items-start justify-between mb-4">
+                <span class="text-sm font-bold text-gray-400">Transactions</span>
+                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+            </div>
+            <div class="text-4xl font-black text-gray-900">{{ total_transactions }}</div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm">
+            <div class="flex items-start justify-between mb-4">
+                <span class="text-sm font-bold text-gray-400">Récompenses</span>
+                <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 0l4 4m0 0l4-4m-4 4V4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+            </div>
+            <div class="text-4xl font-black text-gray-900">{{ rewards_count }}</div>
+        </div>
+    </div>
+
+    <!-- Engagement Section -->
+    <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm mb-8">
+        <h2 class="text-xl font-black text-gray-900 mb-1">Engagement clients</h2>
+        <p class="text-sm text-gray-400 font-medium mb-6">Segmentation basée sur la dernière activité</p>
+        
+        <div class="flex items-center justify-between text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">
+            <span>Répartition</span>
+            <span>{{ total_customers }} clients</span>
+        </div>
+        <div class="h-3 w-full bg-gray-100 rounded-full overflow-hidden flex mb-8">
+            <div class="bg-green-500 h-full transition-all duration-1000" style="width: {{ segments_pct.active }}%"></div>
+            <div class="bg-amber-400 h-full transition-all duration-1000" style="width: {{ segments_pct.hibernating }}%"></div>
+            <div class="bg-orange-500 h-full transition-all duration-1000" style="width: {{ segments_pct.inactive }}%"></div>
+            <div class="bg-red-500 h-full transition-all duration-1000" style="width: {{ segments_pct.lost }}%"></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+            <button onclick="openDrawer('active')" class="group p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl bg-green-50 border border-green-100 text-left transition-all hover:shadow-lg hover:-translate-y-1">
+                <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                    <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-green-500 text-white flex items-center justify-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <span class="font-bold text-green-900 text-xs md:text-sm">Actifs</span>
+                </div>
+                <div class="text-2xl md:text-3xl font-black text-green-900 mb-1 leading-tight">{{ segments.active }}</div>
+                <div class="text-[9px] md:text-xs text-green-600 font-bold opacity-75">{{ segments_pct.active|floatformat:0 }}%</div>
+            </button>
+            <button onclick="openDrawer('hibernating')" class="group p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl bg-amber-50 border border-amber-100 text-left transition-all hover:shadow-lg hover:-translate-y-1">
+                <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                    <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-amber-400 text-white flex items-center justify-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <span class="font-bold text-amber-900 text-xs md:text-sm">Relancer</span>
+                </div>
+                <div class="text-2xl md:text-3xl font-black text-amber-900 mb-1 leading-tight">{{ segments.hibernating }}</div>
+                <div class="text-[9px] md:text-xs text-amber-600 font-bold opacity-75">{{ segments_pct.hibernating|floatformat:0 }}%</div>
+            </button>
+            <button onclick="openDrawer('inactive')" class="group p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl bg-orange-50 border border-orange-100 text-left transition-all hover:shadow-lg hover:-translate-y-1">
+                <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                    <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm0-4a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <span class="font-bold text-orange-900 text-xs md:text-sm">Inactifs</span>
+                </div>
+                <div class="text-2xl md:text-3xl font-black text-orange-900 mb-1 leading-tight">{{ segments.inactive }}</div>
+                <div class="text-[9px] md:text-xs text-orange-600 font-bold opacity-75">{{ segments_pct.inactive|floatformat:0 }}%</div>
+            </button>
+            <button onclick="openDrawer('lost')" class="group p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl bg-red-50 border border-red-100 text-left transition-all hover:shadow-lg hover:-translate-y-1">
+                <div class="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                    <div class="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-red-500 text-white flex items-center justify-center">
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524L13.477 14.89zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/></svg>
+                    </div>
+                    <span class="font-bold text-red-900 text-xs md:text-sm">Perdus</span>
+                </div>
+                <div class="text-2xl md:text-3xl font-black text-red-900 mb-1 leading-tight">{{ segments.lost }}</div>
+                <div class="text-[9px] md:text-xs text-red-600 font-bold opacity-75">{{ segments_pct.lost|floatformat:0 }}%</div>
+            </button>
+        </div>
+
+        <!-- Legend row -->
+        <div class="flex flex-wrap items-center gap-6">
+            <div class="flex items-center gap-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                <span class="text-xs text-gray-500 font-bold tracking-tight">Activité &lt; 7 jours</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-amber-400"></div>
+                <span class="text-xs text-gray-500 font-bold tracking-tight">Activité 7-30 jours</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
+                <span class="text-xs text-gray-500 font-bold tracking-tight">Activité 30-90 jours</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-2.5 h-2.5 rounded-full bg-red-500"></div>
+                <span class="text-xs text-gray-500 font-bold tracking-tight">Activité &gt; 90 jours</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Client Evolution -->
+        <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+            <h2 class="text-lg font-black text-gray-900 mb-1">Évolution des clients</h2>
+            <p class="text-sm text-gray-400 font-medium mb-6">Nouveaux clients par jour</p>
+            <div class="h-64">
+                <canvas id="evolutionChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Transactions Chart -->
+        <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+            <h2 class="text-lg font-black text-gray-900 mb-1">Transactions par jour</h2>
+            <p class="text-sm text-gray-400 font-medium mb-8">Points ajoutés vs Récompenses</p>
+            <div class="h-64">
+                <canvas id="transactionsChart"></canvas>
+            </div>
+            <!-- Legend for transactions -->
+            <div class="flex items-center gap-6 mt-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Points</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-orange-400"></div>
+                    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Récompenses</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Répartition Donut -->
+        <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+            <h2 class="text-lg font-black text-gray-900 mb-1">Répartition des transactions</h2>
+            <p class="text-sm text-gray-400 font-medium mb-12">Points vs Récompenses</p>
+            <div class="h-64 flex items-center justify-center">
+                <canvas id="donutChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Heures de pointe -->
+        <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+            <h2 class="text-lg font-black text-gray-900 mb-1">Heures de pointe</h2>
+            <p class="text-sm text-gray-400 font-medium mb-12">Transactions par heure</p>
+            <div class="h-64">
+                <canvas id="hourlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Section: Top Clients & Jours les plus actifs -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Top 10 Clients -->
+        <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+            <h2 class="text-lg font-black text-gray-900 mb-6">Top 10 clients fidèles</h2>
+            <div class="space-y-4">
+                {% for card in top_clients %}
+                <div class="flex items-center gap-4 group">
+                    <div class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 font-black flex items-center justify-center relative flex-none group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors">
+                        {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ card.customer_name|first }}{% endif %}
+                    </div>
+                    <div class="flex-1">
+                        <div class="text-sm font-bold text-gray-900">{{ card.customer_name }}</div>
+                        <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ card.customer_phone }}</div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-black text-gray-900">{{ card.stamp_count }}</span>
+                        <svg class="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-12 text-gray-300">Aucun client pour le moment</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Jours les plus actifs -->
+        <div class="bg-white rounded-[2.5rem] p-8 border border-gray-100 shadow-sm">
+            <h2 class="text-lg font-black text-gray-900 mb-12">Jours les plus actifs</h2>
+            <div class="space-y-6">
+                {% for count in weekday_data %}
+                <div class="flex items-center gap-4">
+                    <span class="w-12 text-xs font-bold text-gray-400 text-right uppercase tracking-widest">
+                        {% if forloop.counter == 1 %}Dim{% elif forloop.counter == 2 %}Lun{% elif forloop.counter == 3 %}Mar{% elif forloop.counter == 4 %}Mer{% elif forloop.counter == 5 %}Jeu{% elif forloop.counter == 6 %}Ven{% else %}Sam{% endif %}
+                    </span>
+                    <div class="flex-1 h-3 bg-gray-50 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary rounded-full transition-all duration-1000" style="width: {% if total_transactions > 0 %}{{ count|floatformat:0 }}%{% else %}0%{% endif %}"></div>
+                    </div>
+                    <span class="w-8 text-xs font-black text-gray-900 text-right">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Metrics Row -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm text-center">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 mx-auto flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="text-3xl font-black text-gray-900 mb-1">{{ total_points_period }}</div>
+            <div class="text-xs text-gray-400 font-bold uppercase tracking-widest">Points distribués</div>
+            <div class="text-[10px] text-gray-400 mt-1">Durant la période</div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm text-center">
+            <div class="w-10 h-10 rounded-xl bg-green-50 text-green-500 mx-auto flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="text-3xl font-black text-gray-900 mb-1">{{ avg_points_client }}</div>
+            <div class="text-xs text-gray-400 font-bold uppercase tracking-widest">Moy. points/client</div>
+            <div class="text-[10px] text-gray-400 mt-1">Points accumulés : {{ points_accumulated }}</div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm text-center">
+            <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 mx-auto flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="text-3xl font-black text-gray-900 mb-1">{{ completion_rate }}%</div>
+            <div class="text-xs text-gray-400 font-bold uppercase tracking-widest">Taux de complétion</div>
+            <div class="text-[10px] text-gray-400 mt-1">Ont obtenu ≥1 récompense : {{ cards_with_reward_count }}</div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] p-6 border border-gray-100 shadow-sm text-center">
+            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 mx-auto flex items-center justify-center mb-4">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div class="text-3xl font-black text-gray-900 mb-1">{{ avg_reward_time }}</div>
+            <div class="text-xs text-gray-400 font-bold uppercase tracking-widest">Temps moy. récompense</div>
+            <div class="text-[10px] text-gray-400 mt-1">Jours en moyenne</div>
+        </div>
+    </div>
+
+    <!-- Side Drawer (Slide-in) -->
+    <div id="drawerOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-[100] hidden transition-opacity duration-300 opacity-0" onclick="closeDrawer()"></div>
+    <div id="segmentDrawer" class="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-[101] transform translate-x-full transition-transform duration-300 ease-out flex flex-col">
+        <div id="drawerHeader" class="p-8 border-b border-gray-100 flex items-center justify-between">
+            <div>
+                <h3 id="drawerTitle" class="text-2xl font-black text-gray-900 mb-1">Actifs</h3>
+                <p id="drawerSubtitle" class="text-sm text-gray-400 font-medium">2 clients dans ce segment</p>
+            </div>
+            <button onclick="closeDrawer()" class="w-10 h-10 rounded-xl bg-gray-50 text-gray-400 flex items-center justify-center hover:bg-gray-100">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+        
+        <div class="p-8 pb-4">
+            <button class="w-full py-4 bg-primary text-white font-black rounded-2xl shadow-lg shadow-primary/20 flex items-center justify-center gap-2 hover:-translate-y-1 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Contacter ce segment
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+        </div>
+
+        <div id="drawerContent" class="flex-1 overflow-y-auto p-8 pt-4 space-y-4 no-scrollbar">
+            <!-- Client Cards will be injected here -->
+        </div>
+    </div>
+</div>
+
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    canvas { width: 100% !important; height: 100% !important; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Segment Data for Drawer
+    const segmentData = {
+        {% for segment, members in segment_members.items %}
+        "{{ segment }}": {
+            "title": "{% if segment == 'active' %}Actifs{% elif segment == 'hibernating' %}À relancer{% elif segment == 'inactive' %}Inactifs{% else %}Perdus{% endif %}",
+            "color": "{% if segment == 'active' %}bg-green-500{% elif segment == 'hibernating' %}bg-amber-400{% elif segment == 'inactive' %}bg-orange-500{% else %}bg-red-500{% endif %}",
+            "clients": [
+                {% for card in members %}
+                {
+                    "name": "{{ card.customer_name }}",
+                    "initial": "{{ card.customer_name|first }}",
+                    "email": "{{ card.customer_phone }}",
+                    "joined": "{{ card.created_at|date:'d M Y' }}",
+                    "stamps": "{{ card.stamp_count }}"
+                }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ]
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    };
+
+    function openDrawer(segment) {
+        const data = segmentData[segment];
+        const drawer = document.getElementById('segmentDrawer');
+        const overlay = document.getElementById('drawerOverlay');
+        const content = document.getElementById('drawerContent');
+        const title = document.getElementById('drawerTitle');
+        const subtitle = document.getElementById('drawerSubtitle');
+
+        title.innerText = data.title;
+        subtitle.innerText = `${data.clients.length} client${data.clients.length > 1 ? 's' : ''} dans ce segment`;
+        
+        content.innerHTML = data.clients.map(c => `
+            <div class="flex items-center gap-4 bg-gray-50 p-4 rounded-3xl border border-gray-100 hover:border-primary/30 transition-colors group">
+                <div class="w-12 h-12 rounded-2xl bg-white text-primary font-black flex items-center justify-center flex-none group-hover:bg-primary group-hover:text-white transition-colors">
+                    ${c.initial}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-black text-gray-900 truncate">${c.name}</div>
+                    <div class="text-xs text-gray-400 font-bold mt-0.5">${c.email}</div>
+                    <div class="flex items-center gap-3 mt-1.5">
+                        <span class="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-1">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            Inscrit : ${c.joined}
+                        </span>
+                        <span class="text-[10px] text-gray-900 font-black flex items-center gap-1">
+                           🏆 ${c.stamps} pts
+                        </span>
+                    </div>
+                </div>
+                <a href="/dashboard/customers/?q=${c.name}" class="text-xs font-black text-primary px-3 py-1.5 rounded-xl bg-white border border-primary/20 hover:bg-primary hover:text-white transition-all">Voir</a>
+            </div>
+        `).join('');
+
+        overlay.classList.remove('hidden');
+        setTimeout(() => {
+            overlay.classList.add('opacity-100');
+            drawer.classList.remove('translate-x-full');
+        }, 10);
+    }
+
+    function closeDrawer() {
+        const drawer = document.getElementById('segmentDrawer');
+        const overlay = document.getElementById('drawerOverlay');
+        
+        overlay.classList.remove('opacity-100');
+        drawer.classList.add('translate-x-full');
+        setTimeout(() => {
+            overlay.classList.add('hidden');
+        }, 300);
+    }
+
+    function toggleCustomPanel() {
+        const panel = document.getElementById('customDatePanel');
+        if (panel.classList.contains('hidden')) {
+            panel.classList.remove('hidden');
+            panel.classList.add('flex');
+        } else {
+            panel.classList.add('hidden');
+            panel.classList.remove('flex');
+        }
+    }
+
+    function applyCustomRange() {
+        const start = document.getElementById('startDate').value;
+        const end = document.getElementById('endDate').value;
+        if (start && end) {
+            window.location.href = `?period=custom&start=${start}&end=${end}`;
+        } else {
+            alert('Veuillez sélectionner une date de début et une date de fin.');
+        }
+    }
+
+    // --- Charts Logic ---
+    Chart.defaults.font.family = 'Plus Jakarta Sans, sans-serif';
+    Chart.defaults.color = '#94a3b8';
+
+    const labels = [{% for item in daily_activity %}"{{ item.date }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+    const newClients = [{% for item in daily_activity %}{{ item.new_clients }}{% if not forloop.last %},{% endif %}{% endfor %}];
+    const stamps = [{% for item in daily_activity %}{{ item.stamps }}{% if not forloop.last %},{% endif %}{% endfor %}];
+    const rewards = [{% for item in daily_activity %}{{ item.rewards }}{% if not forloop.last %},{% endif %}{% endfor %}];
+
+    // 1. Evolution Chart
+    new Chart(document.getElementById('evolutionChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                data: newClients,
+                borderColor: '#3B82F6',
+                borderWidth: 3,
+                backgroundColor: (context) => {
+                    const chart = context.chart;
+                    const {ctx, chartArea} = chart;
+                    if (!chartArea) return null;
+                    const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
+                    gradient.addColorStop(0, 'rgba(59, 130, 246, 0.1)');
+                    gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
+                    return gradient;
+                },
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: '#fff',
+                pointBorderWidth: 2,
+                pointHoverRadius: 6,
+                pointHoverBorderWidth: 3
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { borderDash: [2, 2], drawBorder: false }, ticks: { stepSize: 1, precision: 0 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 2. Transactions Chart
+    new Chart(document.getElementById('transactionsChart'), {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    data: stamps,
+                    borderColor: '#3B82F6',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 2
+                },
+                {
+                    data: rewards,
+                    borderColor: '#FB923C',
+                    borderWidth: 3,
+                    fill: false,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderWidth: 2
+                }
+            ]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { grid: { borderDash: [2, 2], drawBorder: false }, ticks: { stepSize: 1, precision: 0 } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 3. Donut Chart
+    new Chart(document.getElementById('donutChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Points', 'Récompenses'],
+            datasets: [{
+                data: [{{ total_transactions }}, {{ rewards_count }}],
+                backgroundColor: ['#3B82F6', '#FB923C'],
+                borderWidth: 0,
+                cutout: '80%',
+                hoverOffset: 10
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+
+    // 4. Hourly Chart
+    new Chart(document.getElementById('hourlyChart'), {
+        type: 'bar',
+        data: {
+            labels: Array.from({length: 24}, (_, i) => `${i}h`),
+            datasets: [{
+                data: {{ hour_data|safe }},
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                hoverBackgroundColor: '#3B82F6',
+                borderRadius: 8,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { display: false },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}

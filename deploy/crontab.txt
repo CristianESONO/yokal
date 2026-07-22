@@ -1,0 +1,15 @@
+# Yokalma Cron Jobs
+# Installation: crontab deploy/crontab.txt
+# Chemin du projet sur le serveur: /usr/local/etc/yokal
+
+# Vérifier les abonnements expirés et envoyer les rappels - Tous les jours à 2h du matin
+0 2 * * * cd /usr/local/etc/yokal && /usr/bin/python3 manage.py check_subscriptions --notify-days 7 >> /var/log/yokal/cron.log 2>&1
+
+# Expirer les programmes de fidélité terminés - Tous les jours à 3h du matin
+0 3 * * * cd /usr/local/etc/yokal && /usr/bin/python3 manage.py expire_programs >> /var/log/yokal/cron.log 2>&1
+
+# Alertes admin (paiements échoués, marchands inactifs) - Tous les lundis à 9h
+0 9 * * 1 cd /usr/local/etc/yokal && /usr/bin/python3 manage.py admin_alerts >> /var/log/yokal/cron.log 2>&1
+
+# Rappels WhatsApp clients inactifs - Tous les mardis à 10h
+0 10 * * 2 cd /usr/local/etc/yokal && /usr/bin/python3 manage.py send_reminders --days 30 >> /var/log/yokal/cron.log 2>&1

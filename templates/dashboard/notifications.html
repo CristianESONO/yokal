@@ -1,0 +1,370 @@
+{% extends 'dashboard/base.html' %}
+{% block dash_content %}
+
+<!-- Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+  <div>
+    <div class="flex items-center gap-2 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2">
+      <span>Dashboard</span>
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span class="text-gray-900">Notifications</span>
+    </div>
+    <h1 class="text-2xl md:text-3xl font-black text-gray-900 mb-1">Campagnes de Notifications</h1>
+    <p class="text-sm text-gray-500 font-medium">Communiquez avec vos clients via WhatsApp</p>
+  </div>
+</div>
+
+{% if not user.merchant_profile.whatsapp_connected %}
+<!-- Warning: WhatsApp not connected -->
+<div class="bg-amber-50 border border-amber-100 rounded-[1.5rem] p-6 mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+  <div class="flex items-center gap-4">
+    <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center flex-shrink-0 text-xl">⚠️</div>
+    <div>
+      <h3 class="font-bold text-amber-800">WhatsApp non connecté</h3>
+      <p class="text-xs text-amber-700">Vous devez connecter votre compte WhatsApp pour envoyer des notifications.</p>
+    </div>
+  </div>
+  <a href="{% url 'dashboard:settings' %}?tab=whatsapp" class="px-6 py-3 bg-amber-600 text-white text-xs font-black uppercase rounded-xl hover:bg-amber-700 transition-all">
+    Connecter maintenant
+  </a>
+</div>
+{% endif %}
+
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+
+  <!-- LEFT: Campaign Composer -->
+  <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
+    <div class="flex items-center gap-4 mb-8">
+      <div class="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M11 5.882L15.011 3a.256.256 0 01.372.19v14.28a.256.256 0 01-.372.19L11 14.818m0-8.936L7.583 14.818M11 14.818H7.583" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h3 class="font-black text-gray-900">Nouvelle Campagne</h3>
+        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">WhatsApp Message</p>
+      </div>
+    </div>
+
+    <form id="bulkNotifyForm" onsubmit="sendBulkNotification(event)" class="space-y-6">
+      {% csrf_token %}
+      
+      <!-- Target Group -->
+      <div class="space-y-4">
+          <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">Segment de clients à cibler</label>
+          <div class="space-y-3">
+              <label class="flex items-center gap-5 p-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] cursor-pointer hover:bg-white hover:border-primary/20 hover:shadow-sm transition-all group relative">
+                  <div class="relative flex items-center justify-center">
+                    <input type="radio" name="notify_type" value="all" checked onchange="updateDefaultMessage()" 
+                           class="w-5 h-5 text-primary focus:ring-primary/20 border-gray-200">
+                  </div>
+                  <div class="flex-1">
+                      <div class="text-sm font-black text-gray-900">Tous les clients</div>
+                      <div class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Base complète</div>
+                  </div>
+                  <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl group-hover:scale-110 transition-transform">👥</div>
+              </label>
+
+              <label class="flex items-center gap-5 p-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] cursor-pointer hover:bg-white hover:border-primary/20 hover:shadow-sm transition-all group relative">
+                  <div class="relative flex items-center justify-center">
+                    <input type="radio" name="notify_type" value="rewards" onchange="updateDefaultMessage()" 
+                           class="w-5 h-5 text-primary focus:ring-primary/20 border-gray-200">
+                  </div>
+                  <div class="flex-1">
+                      <div class="text-sm font-black text-gray-900">Récompenses disponibles</div>
+                      <div class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Cadeaux non réclamés</div>
+                  </div>
+                  <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl group-hover:scale-110 transition-transform">🎁</div>
+              </label>
+
+              <label class="flex items-center gap-5 p-5 bg-gray-50 border border-gray-100 rounded-[1.5rem] cursor-pointer hover:bg-white hover:border-primary/20 hover:shadow-sm transition-all group relative">
+                  <div class="relative flex items-center justify-center">
+                    <input type="radio" name="notify_type" value="close" onchange="updateDefaultMessage()" 
+                           class="w-5 h-5 text-primary focus:ring-primary/20 border-gray-200">
+                  </div>
+                  <div class="flex-1">
+                      <div class="text-sm font-black text-gray-900">Proches d'une récompense</div>
+                      <div class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">Progression > 70%</div>
+                  </div>
+                  <div class="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl group-hover:scale-110 transition-transform">⚡</div>
+              </label>
+          </div>
+      </div>
+
+      <!-- Message Editor -->
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label class="block text-[10px] font-black text-gray-400 uppercase tracking-widest uppercase">Message WhatsApp</label>
+          <span class="text-[10px] font-black text-gray-300 uppercase" id="char-count">0 / 500</span>
+        </div>
+        <textarea id="notif-message" name="message" rows="6" required 
+                  onkeyup="updateWhatsAppPreview()"
+                  class="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm text-gray-900 font-medium outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary/30 transition-all resize-none shadow-inner"
+                  placeholder="Bonjour {nom}..."></textarea>
+        
+        <div class="flex flex-wrap gap-2 mt-3">
+          <button type="button" onclick="insertVariable('{nom}')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-[10px] font-black text-gray-500 rounded-lg transition-all border border-gray-200">
+            {nom}
+          </button>
+          <button type="button" onclick="insertVariable('{points}')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-[10px] font-black text-gray-500 rounded-lg transition-all border border-gray-200">
+            {points}
+          </button>
+          <button type="button" onclick="insertVariable('{restant}')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-[10px] font-black text-gray-500 rounded-lg transition-all border border-gray-200">
+            {restant}
+          </button>
+          <button type="button" onclick="insertVariable('{seuil}')" class="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 text-[10px] font-black text-gray-500 rounded-lg transition-all border border-gray-200">
+            {seuil}
+          </button>
+        </div>
+      </div>
+
+      <!-- Progress Section (Hidden by default) -->
+      <div id="bulk-progress-container" class="hidden space-y-4 pt-6 border-t border-gray-50">
+          <div class="flex items-center justify-between text-[11px] font-black uppercase">
+              <span class="text-gray-900" id="progress-status">Chargement...</span>
+              <span class="text-primary" id="progress-percent">0%</span>
+          </div>
+          <div class="h-2 w-full bg-gray-100 rounded-full overflow-hidden border border-gray-50">
+              <div id="progress-bar" class="h-full bg-primary rounded-full transition-all duration-300" style="width: 0%;"></div>
+          </div>
+          <p class="text-[10px] text-gray-400 font-medium italic text-center">Ne fermez pas cette page pendant l'envoi.</p>
+      </div>
+
+      <div id="bulk-buttons">
+          <button type="submit" 
+                  {% if not user.merchant_profile.whatsapp_connected %}disabled{% endif %}
+                  class="w-full flex items-center justify-center gap-3 py-5 bg-gray-900 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl shadow-gray-200 hover:scale-[1.01] active:scale-[0.99] transition-all disabled:opacity-50 disabled:grayscale disabled:pointer-events-none">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Lancer la campagne
+          </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- RIGHT: Mobile WhatsApp Preview -->
+  <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100 flex flex-col items-center justify-between">
+    <div class="w-full flex items-center gap-4 mb-8">
+      <div class="w-10 h-10 rounded-xl bg-green-50 text-green-600 flex items-center justify-center">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div>
+        <h3 class="font-black text-gray-900">Aperçu WhatsApp</h3>
+        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Visualisation mobile</p>
+      </div>
+    </div>
+
+    <!-- Phone Frame -->
+    <div class="relative scale-[0.9] sm:scale-100 origin-top">
+      <div class="relative w-[300px] h-[580px] bg-gray-100 rounded-[3.5rem] border-[12px] border-gray-900 shadow-2xl overflow-hidden shadow-primary/20">
+        
+        <!-- WhatsApp Header -->
+        <div class="h-14 bg-[#075e54] flex items-end px-4 pb-2 gap-3 pt-6">
+            <div class="w-6 h-6 rounded-full bg-white/20"></div>
+            <div class="flex-1">
+                <div class="text-[11px] font-bold text-white leading-tight">{{ program.merchant.business_name }}</div>
+                <div class="text-[8px] text-white/50 leading-tight">En ligne</div>
+            </div>
+            <div class="flex gap-2.5">
+                <div class="w-4 h-4 rounded-full bg-white/10"></div>
+                <div class="w-4 h-4 rounded-full bg-white/10"></div>
+            </div>
+        </div>
+
+        <!-- WhatsApp Chat Body -->
+        <div class="h-full bg-[#e5ddd5] p-4 relative" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-blend-mode: overlay;">
+            
+            <div class="flex justify-center mb-6">
+                <div class="px-3 py-1 bg-[#dcf8c6]/60 backdrop-blur-sm rounded-lg text-[10px] font-bold text-gray-600 border border-black/5">Aujourd'hui</div>
+            </div>
+
+            <!-- WhatsApp Bubble -->
+            <div class="relative max-w-[85%] bg-white rounded-2xl rounded-tl-none p-3 shadow-md border-b-[3px] border-black/5 animate-in slide-in-from-left duration-300">
+                <!-- Tail -->
+                <div class="absolute -left-2 top-0 w-2 h-2 bg-white" style="clip-path: polygon(100% 0, 0 0, 100% 100%);"></div>
+                
+                <p id="prev-msg" class="text-[12px] text-gray-800 leading-relaxed whitespace-pre-wrap">Le message apparaîtra ici...</p>
+                <div class="flex justify-end gap-1 items-center mt-1">
+                    <span class="text-[9px] text-gray-400">10:41</span>
+                    <svg class="w-3 h-3 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M0.458 12.89L2.015 11.33L8.687 18.01L6.687 20L0.458 12.89ZM7.5 15L9.057 13.443L12.443 16.829L10.887 18.386L7.5 15ZM10.5 12L12.057 10.443L15.443 13.829L13.887 15.386L10.5 12ZM13.5 9L15.057 7.443L21.386 13.772L19.829 15.329L13.5 9ZM16.5 6L18.057 4.443L21.386 7.772L19.829 9.329L16.5 6Z"/></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- WhatsApp Input Placeholder -->
+        <div class="absolute bottom-4 left-4 right-4 h-12 bg-white rounded-full shadow-lg flex items-center px-4 justify-between border border-gray-100">
+            <div class="text-[11px] text-gray-300">Taper un message</div>
+            <div class="w-8 h-8 rounded-full bg-[#128c7e] flex items-center justify-center">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats summary -->
+    <div class="w-full grid grid-cols-2 gap-4 mt-8">
+        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 text-center">
+            <div class="text-[9px] font-black text-gray-400 uppercase mb-1">Délai / Msg</div>
+            <div class="text-xl font-black text-gray-900">1.0s</div>
+        </div>
+        <div class="bg-gray-50 rounded-2xl p-4 border border-gray-100 text-center">
+            <div class="text-[9px] font-black text-gray-400 uppercase mb-1">Clients Max</div>
+            <div class="text-xl font-black text-gray-900">{{ program.cards.count }}</div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<!-- Pending Rewards Section -->
+{% if pending_rewards %}
+<div class="mb-12">
+    <div class="flex items-center gap-4 mb-8">
+      <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+        🎁
+      </div>
+      <div>
+        <h3 class="font-black text-gray-900">Récompenses à valider</h3>
+        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{{ pending_rewards|length }} cadeaux en attente</p>
+      </div>
+    </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for reward in pending_rewards %}
+    <div class="bg-white border border-gray-100 rounded-[2rem] p-6 shadow-sm group hover:shadow-md transition-all flex flex-col">
+      <div class="flex items-center gap-4 mb-5">
+        <div class="w-12 h-12 rounded-2xl bg-gray-50 text-2xl flex items-center justify-center flex-shrink-0">👤</div>
+        <div class="flex-1">
+          <div class="font-bold text-gray-900 text-sm">{{ reward.card.customer_name }}</div>
+          <div class="text-[10px] text-gray-400 font-bold uppercase">{{ reward.unlocked_at|date:"d M Y" }}</div>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center text-xs font-black">
+          {{ reward.card.stamp_count }}
+        </div>
+      </div>
+
+      <div class="bg-gray-50 rounded-2xl p-4 mb-6 border border-gray-100 flex-1">
+        <div class="text-[9px] text-gray-400 font-black uppercase mb-1">Cadeau débloqué</div>
+        <div class="text-xs font-bold text-gray-800 leading-tight">{{ reward.card.program.reward_description|default:"Récompense fidélité" }}</div>
+      </div>
+
+      <form method="post" action="{% url 'loyalty:redeem_reward' reward.id %}">
+        {% csrf_token %}
+        <button type="submit" class="w-full py-3.5 bg-gray-900 text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-gray-800 transition-all shadow-sm">
+          Marquer comme utilisé ✓
+        </button>
+      </form>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<script>
+function updateWhatsAppPreview() {
+    const msg = document.getElementById('notif-message').value;
+    const prev = document.getElementById('prev-msg');
+    const charCount = document.getElementById('char-count');
+    
+    // Variables replacement simulation in preview
+    let previewText = msg || 'Le message apparaîtra ici...';
+    previewText = previewText.replace(/{nom}/g, 'Client Name');
+    previewText = previewText.replace(/{points}/g, '8');
+    previewText = previewText.replace(/{restant}/g, '2');
+    previewText = previewText.replace(/{seuil}/g, '{{ program.reward_threshold }}');
+    
+    prev.textContent = previewText;
+    charCount.textContent = msg.length + ' / 500';
+    
+    if (msg.length > 500) {
+        charCount.classList.add('text-red-500');
+    } else {
+        charCount.classList.remove('text-red-500');
+    }
+}
+
+function insertVariable(variable) {
+    const textarea = document.getElementById('notif-message');
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const text = textarea.value;
+    textarea.value = text.substring(0, start) + variable + text.substring(end);
+    textarea.focus();
+    textarea.setSelectionRange(start + variable.length, start + variable.length);
+    updateWhatsAppPreview();
+}
+
+function updateDefaultMessage() {
+    const type = document.querySelector('input[name="notify_type"]:checked').value;
+    const txt = document.getElementById('notif-message');
+    
+    const messages = {
+        'all': 'Bonjour {nom} ! De nouvelles offres vous attendent chez {{ program.merchant.business_name }}. Passez nous voir pour remplir votre carte {{ program.name }} !',
+        'rewards': 'Félicitations {nom} ! Vous avez une récompense disponible chez {{ program.merchant.business_name }}. Venez vite en profiter !',
+        'close': 'Bonjour {nom} ! Vous avez déjà {points} tampons sur votre carte {{ program.name }}. Plus que {restant} visites pour votre récompense !'
+    };
+    
+    txt.value = messages[type];
+    updateWhatsAppPreview();
+}
+
+async function sendBulkNotification(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const btn = e.target.querySelector('button[type="submit"]');
+    const loadingContainer = document.getElementById('bulk-progress-container');
+    const buttons = document.getElementById('bulk-buttons');
+
+    if (!confirm('Voulez-vous vraiment lancer cette campagne de messages ?')) return;
+
+    btn.disabled = true;
+    buttons.classList.add('hidden');
+    loadingContainer.classList.remove('hidden');
+    
+    document.getElementById('progress-status').textContent = 'Initialisation...';
+    document.getElementById('progress-bar').style.width = '10%';
+
+    try {
+        const response = await fetch('{% url "accounts:whatsapp_bulk_notify" %}', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            document.getElementById('progress-bar').style.width = '100%';
+            document.getElementById('progress-percent').textContent = '100%';
+            document.getElementById('progress-status').textContent = 'Campagne Terminée !';
+            
+            setTimeout(() => {
+                alert(`${data.sent} messages envoyés avec succès.`);
+                location.reload();
+            }, 800);
+        } else {
+            alert(data.error || 'Une erreur est survenue');
+            btn.disabled = false;
+            buttons.classList.remove('hidden');
+            loadingContainer.classList.add('hidden');
+        }
+    } catch (error) {
+        alert('Erreur lors de l\'envoi');
+        btn.disabled = false;
+        buttons.classList.remove('hidden');
+        loadingContainer.classList.add('hidden');
+    }
+}
+
+// Initial call
+updateDefaultMessage();
+</script>
+
+<style>
+@keyframes slideInFromLeft {
+    from { transform: translateX(-20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+.animate-in {
+    animation-fill-mode: both;
+}
+</style>
+
+{% endblock %}

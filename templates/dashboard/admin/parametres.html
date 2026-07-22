@@ -1,0 +1,103 @@
+{% extends 'dashboard/admin/base.html' %}
+{% block admin_breadcrumb %}Console Admin / Paramètres{% endblock %}
+
+{% block admin_content %}
+<div class="space-y-6">
+
+  <header>
+    <h1 class="text-2xl font-bold tracking-tight text-zinc-950">Paramètres Plateforme</h1>
+    <p class="mt-1 text-sm text-zinc-500">Informations globales et configuration générale de Yokalma.</p>
+  </header>
+
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <!-- Platform Info -->
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-6 shadow-sm">
+      <h2 class="text-sm font-semibold text-zinc-900 mb-4 border-b border-zinc-100 pb-2">Informations Générales</h2>
+      <div class="space-y-3 text-xs">
+        <div class="flex justify-between py-1.5 border-b border-zinc-50">
+          <span class="text-zinc-500">Nom de la plateforme</span>
+          <span class="font-semibold text-zinc-900">Yokalma</span>
+        </div>
+        <div class="flex justify-between py-1.5 border-b border-zinc-50">
+          <span class="text-zinc-500">Domaine</span>
+          <span class="font-mono font-semibold text-zinc-700">yokalma.linkup.sn</span>
+        </div>
+        <div class="flex justify-between py-1.5 border-b border-zinc-50">
+          <span class="text-zinc-500">Langue</span>
+          <span class="text-zinc-700">Français</span>
+        </div>
+        <div class="flex justify-between py-1.5 border-b border-zinc-50">
+          <span class="text-zinc-500">Fuseau horaire</span>
+          <span class="text-zinc-700">Africa/Dakar</span>
+        </div>
+        <div class="flex justify-between py-1.5">
+          <span class="text-zinc-500">Devise de base</span>
+          <span class="font-mono font-semibold text-zinc-700">XOF (Franc CFA)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Counts -->
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-6 shadow-sm">
+      <h2 class="text-sm font-semibold text-zinc-900 mb-4 border-b border-zinc-100 pb-2">Statistiques Globales</h2>
+      <div class="space-y-3 text-xs">
+        <div class="flex justify-between py-1.5 border-b border-zinc-50">
+          <span class="text-zinc-500">Marchands inscrits</span>
+          <span class="font-mono font-bold text-zinc-900">{{ total_merchants }}</span>
+        </div>
+        <div class="flex justify-between py-1.5 border-b border-zinc-50">
+          <span class="text-zinc-500">Cartes de fidélité</span>
+          <span class="font-mono font-bold text-zinc-900">{{ total_cards }}</span>
+        </div>
+        <div class="flex justify-between py-1.5 border-b border-zinc-50">
+          <span class="text-zinc-500">Transactions totales</span>
+          <span class="font-mono font-bold text-zinc-900">{{ total_transactions }}</span>
+        </div>
+        <div class="flex justify-between py-1.5 border-b border-zinc-50">
+          <span class="text-zinc-500">Devises actives</span>
+          <span class="font-mono font-bold text-zinc-900">{{ total_currencies }}</span>
+        </div>
+        <div class="flex justify-between py-1.5">
+          <span class="text-zinc-500">Comptes Wallet liés</span>
+          <span class="font-mono font-bold text-zinc-900">{{ wallet_count }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Users -->
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-6 shadow-sm lg:col-span-2">
+      <h2 class="text-sm font-semibold text-zinc-900 mb-4 border-b border-zinc-100 pb-2">Administrateurs & Équipe</h2>
+      <table class="w-full text-left">
+        <thead>
+          <tr class="bg-zinc-50 border-b border-zinc-100">
+            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Utilisateur</th>
+            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Email</th>
+            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Super Admin</th>
+            <th class="px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Dernière connexion</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-zinc-100">
+          {% for u in staff_users %}
+          <tr class="hover:bg-zinc-50/50">
+            <td class="px-4 py-3 text-sm font-medium text-zinc-900">{{ u.get_full_name|default:u.username }}</td>
+            <td class="px-4 py-3 text-xs text-zinc-500 font-mono">{{ u.email }}</td>
+            <td class="px-4 py-3">
+              {% if u.is_superuser %}
+                <span class="text-[10px] font-bold text-emerald-600">✓ Superuser</span>
+              {% else %}
+                <span class="text-[10px] text-zinc-400">Staff</span>
+              {% endif %}
+            </td>
+            <td class="px-4 py-3 text-xs text-zinc-400">{{ u.last_login|date:"d M Y H:i"|default:"Jamais" }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="4" class="px-4 py-6 text-center text-xs text-zinc-400">Aucun administrateur trouvé.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Points de vente - Yokalma{% endblock %}
+
+{% block dash_content %}
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <h1 class="text-3xl font-bold text-white">Points de vente</h1>
+            <p class="text-gray-400 mt-1">Gérez vos différents points de vente</p>
+        </div>
+        <a href="{% url 'dashboard:location_create' %}" class="bg-[#D4FF4E] text-black px-6 py-3 rounded-lg font-semibold hover:bg-[#c4ef3e] transition">
+            + Nouveau point de vente
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="mb-4 p-4 rounded-lg {% if message.tags == 'success' %}bg-green-500/20 text-green-400{% else %}bg-red-500/20 text-red-400{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="bg-[#1E293B] rounded-xl overflow-hidden">
+        {% if locations %}
+            <table class="w-full">
+                <thead class="bg-[#0F172A]">
+                    <tr>
+                        <th class="px-6 py-4 text-left text-gray-400 font-medium">Nom</th>
+                        <th class="px-6 py-4 text-left text-gray-400 font-medium">Adresse</th>
+                        <th class="px-6 py-4 text-left text-gray-400 font-medium">Ville</th>
+                        <th class="px-6 py-4 text-left text-gray-400 font-medium">Téléphone</th>
+                        <th class="px-6 py-4 text-left text-gray-400 font-medium">Statut</th>
+                        <th class="px-6 py-4 text-left text-gray-400 font-medium">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for location in locations %}
+                        <tr class="border-t border-gray-700 hover:bg-[#2D3748]">
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <span class="text-white font-medium">{{ location.name }}</span>
+                                    {% if location.is_main %}
+                                        <span class="ml-2 bg-[#D4FF4E] text-black text-xs px-2 py-1 rounded">Siège</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 text-gray-300">{{ location.address|default:"-" }}</td>
+                            <td class="px-6 py-4 text-gray-300">{{ location.city|default:"-" }}</td>
+                            <td class="px-6 py-4 text-gray-300">{{ location.phone|default:"-" }}</td>
+                            <td class="px-6 py-4">
+                                {% if location.is_active %}
+                                    <span class="text-green-400">Actif</span>
+                                {% else %}
+                                    <span class="text-red-400">Inactif</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'dashboard:location_edit' location.id %}" class="text-blue-400 hover:text-blue-300">Modifier</a>
+                                    {% if not location.is_main %}
+                                        <button onclick="deleteLocation({{ location.id }})" class="text-red-400 hover:text-red-300">Supprimer</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="p-12 text-center text-gray-400">
+                <p class="text-lg">Aucun point de vente configuré</p>
+                <p class="mt-2">Créez votre premier point de vente pour commencer</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function deleteLocation(locationId) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce point de vente ?')) {
+        const url = '/dashboard/settings/locations/' + locationId + '/delete/';
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect;
+            } else {
+                alert(data.error);
+            }
+        });
+    }
+}
+
+function getCookie(name) {
+    const value = '; ' + document.cookie;
+    const parts = value.split('; ' + name + '=');
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+</script>
+{% endblock %}

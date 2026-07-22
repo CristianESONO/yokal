@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}Carte indisponible — {{ program.merchant.business_name }}{% endblock %}
+
+{% block extra_head %}
+<style>
+  body { background: #F3F4F6; font-family: 'Plus Jakarta Sans', sans-serif; }
+  .wrap { max-width: 440px; margin: 0 auto; padding: 60px 20px; text-align: center; }
+  .box {
+    background: white; border-radius: 28px; padding: 40px 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  }
+  h1 { font-size: 22px; font-weight: 900; margin: 16px 0 8px; color: #111827; }
+  p { font-size: 14px; color: #6B7280; line-height: 1.6; font-weight: 500; }
+  .icon { font-size: 48px; }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="wrap">
+  <div class="box">
+    {% if reason == 'pending' %}
+    <div class="icon">⏳</div>
+    <h1>En attente de validation</h1>
+    <p>Votre demande d'adhésion chez <strong>{{ program.merchant.business_name }}</strong> est en cours d'examen. Vous pourrez accéder à votre carte une fois approuvée.</p>
+    {% elif reason == 'rejected' %}
+    <div class="icon">✕</div>
+    <h1>Demande refusée</h1>
+    <p>Votre demande d'adhésion au programme <strong>{{ program.name }}</strong> n'a pas été acceptée. Contactez le commerce pour plus d'informations.</p>
+    {% elif reason == 'revoked' %}
+    <div class="icon">🔒</div>
+    <h1>Carte révoquée</h1>
+    <p>Votre carte de fidélité a été révoquée par {{ program.merchant.business_name }}. Contactez le commerce pour plus d'informations.</p>
+    {% else %}
+    <div class="icon">—</div>
+    <h1>Carte indisponible</h1>
+    <p>Cette carte n'est plus accessible.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

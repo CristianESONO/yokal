@@ -1,0 +1,84 @@
+{% extends 'dashboard/admin/base.html' %}
+{% block admin_breadcrumb %}Console Admin / Devises{% endblock %}
+
+{% block admin_content %}
+<div class="space-y-6">
+
+  <header class="flex items-end justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-zinc-950">Gestion des Devises</h1>
+      <p class="mt-1 text-sm text-zinc-500">Devises autorisées sur la plateforme Yokalma. Base : <strong>XOF</strong>.</p>
+    </div>
+  </header>
+
+  <!-- Add currency form -->
+  <div class="rounded-xl bg-white border border-zinc-200/80 p-6 shadow-sm">
+    <h2 class="text-sm font-semibold text-zinc-900 mb-4">Ajouter une devise</h2>
+    <form method="post" action="{% url 'admin_devises' %}" class="flex flex-wrap gap-3 items-end">
+      {% csrf_token %}
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Code (ex: EUR)</label>
+        <input type="text" name="code" maxlength="10" required placeholder="EUR" class="px-3 py-2 text-sm rounded-lg border border-zinc-200 focus:ring-2 focus:ring-zinc-300 focus:outline-none w-28 font-mono uppercase">
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Nom</label>
+        <input type="text" name="name" required placeholder="Euro" class="px-3 py-2 text-sm rounded-lg border border-zinc-200 focus:ring-2 focus:ring-zinc-300 focus:outline-none w-40">
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="text-[10px] font-bold uppercase tracking-widest text-zinc-500">Symbole</label>
+        <input type="text" name="symbol" maxlength="5" required placeholder="€" class="px-3 py-2 text-sm rounded-lg border border-zinc-200 focus:ring-2 focus:ring-zinc-300 focus:outline-none w-20 text-center">
+      </div>
+      <button type="submit" class="px-5 py-2 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors">
+        Ajouter
+      </button>
+    </form>
+    {% if messages %}
+    {% for msg in messages %}
+    <p class="mt-3 text-sm {% if msg.tags == 'error' %}text-red-600{% else %}text-emerald-600{% endif %}">{{ msg }}</p>
+    {% endfor %}
+    {% endif %}
+  </div>
+
+  <!-- Currency table -->
+  <div class="overflow-hidden rounded-xl bg-white border border-zinc-200/80 shadow-sm">
+    <div class="px-5 py-4 border-b border-zinc-100">
+      <h2 class="text-sm font-semibold text-zinc-900">Devises enregistrées</h2>
+    </div>
+    <table class="w-full text-left">
+      <thead>
+        <tr class="bg-zinc-50 border-b border-zinc-100">
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Code</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Nom</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Symbole</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Statut</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400 text-right">Modifier</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-zinc-100">
+        {% for c in currencies %}
+        <tr class="hover:bg-zinc-50/50 transition-colors">
+          <td class="px-5 py-4 font-mono text-sm font-bold text-zinc-900">{{ c.code }}</td>
+          <td class="px-5 py-4 text-sm text-zinc-700">{{ c.name }}</td>
+          <td class="px-5 py-4 font-mono text-sm text-zinc-500">{{ c.symbol }}</td>
+          <td class="px-5 py-4">
+            <form method="post" action="{% url 'admin_devises' %}">
+              {% csrf_token %}
+              <input type="hidden" name="toggle_id" value="{{ c.id }}">
+              <button type="submit" class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[10px] font-bold border cursor-pointer transition-colors
+                {% if c.is_active %}bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100{% else %}bg-zinc-100 text-zinc-500 border-zinc-200 hover:bg-zinc-200{% endif %}">
+                <span class="size-1.5 rounded-full {% if c.is_active %}bg-emerald-500{% else %}bg-zinc-400{% endif %}"></span>
+                {% if c.is_active %}Actif{% else %}Inactif{% endif %}
+              </button>
+            </form>
+          </td>
+          <td class="px-5 py-4 text-right text-[10px] text-zinc-400">{{ c.updated_at|date:"d M Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-5 py-10 text-center text-sm text-zinc-400">Aucune devise configurée.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

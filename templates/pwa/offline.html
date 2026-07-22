@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Hors-ligne — Yokalma{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-[#F9FAFB] flex flex-col items-center justify-center p-4">
+  <div class="max-w-md w-full bg-white rounded-3xl p-8 border border-gray-100 shadow-sm text-center">
+    
+    <!-- Animated SVG Icon representing offline state -->
+    <div class="w-20 h-20 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-primary/20">
+      <svg class="w-10 h-10 text-primary animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-3.536 5 5 0 015.071-5.071m-7.071 7.071L3 21m3.636-15.364a9 9 0 0112.728 0M12 12h.01"></path>
+      </svg>
+    </div>
+
+    <!-- Text content -->
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">Vous êtes hors-ligne</h1>
+    <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+      Il semble que vous ayez perdu votre connexion Internet. Ne vous inquiétez pas, vous pourrez continuer à utiliser Yokalma dès que le réseau sera rétabli.
+    </p>
+
+    <!-- Action Button to Retry -->
+    <button onclick="window.location.reload();" class="w-full py-3.5 px-6 rounded-xl bg-primary text-white font-semibold shadow-sm hover:bg-opacity-95 transform hover:-translate-y-0.5 transition-all text-sm flex items-center justify-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17"></path></svg>
+      Réessayer
+    </button>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,255 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Scanner QR — Yokalma{% endblock %}
+
+{% block extra_head %}
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+<style>
+  #reader {
+    width: 100%;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    border: 2px solid rgba(0,0,0,0.05);
+    background: #000;
+    margin-bottom: 1.5rem;
+    position: relative;
+  }
+  
+  #reader__dashboard { padding: 1.5rem !important; background: rgba(0,0,0,0.5) !important; color: white !important; }
+  
+  button#html5-qrcode-button-camera-start, 
+  button#html5-qrcode-button-camera-stop {
+    background: #3B82F6 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 0.75rem !important;
+    padding: 0.75rem 1.5rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+  }
+
+  .status-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 120; /* ABOVE Top Bar (110) during success/error */
+    display: none;
+    place-items: center;
+    backdrop-filter: blur(8px);
+    padding: 1rem;
+    text-align: center;
+  }
+  /* Force container integrity */
+  .scanner-container {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  /* Aggressive Mobile Overrides */
+  @media (max-width: 1024px) {
+    #sidebar { 
+      transform: translateX(-100%) !important; 
+    }
+    #sidebar.open { 
+      transform: translateX(0) !important; 
+    }
+    #sidebar-backdrop.hidden {
+      display: none !important;
+    }
+    main {
+      margin-left: 0 !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      width: 100% !important;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block dash_content %}
+<div class="max-w-2xl mx-auto scanner-container">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Scanner de fidélité</h1>
+    <p class="text-gray-500 text-sm">Scannez le QR Code Yokalma du client pour ajouter des {{ program.unit_label|lower }}.</p>
+  </div>
+
+  <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
+    <!-- QR Reader -->
+    <div id="reader"></div>
+
+    <!-- Value adjustment -->
+    <div class="mb-6">
+      <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
+        {{ stamp_input_label }}
+      </label>
+      <input type="number" id="scan-amount" value="{{ stamp_input_default }}" step="{{ stamp_input_step }}" min="1"
+             placeholder="{% if program and program.program_type == 'spend' %}Ex: 2000{% else %}1{% endif %}"
+             class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-gray-900 font-bold focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+      {% if program and program.program_type == 'spend' %}
+      <p class="mt-2 text-[10px] text-gray-400 font-medium">Le montant saisi s'ajoute au cumul client (ex. 2 000 sur {{ program.reward_threshold }} {{ program.currency_symbol }}).</p>
+      {% endif %}
+    </div>
+
+    <!-- Manual entry toggle -->
+    <div class="text-center">
+      <button onclick="document.getElementById('manual-entry').classList.toggle('hidden'); this.classList.toggle('text-primary')" 
+              class="text-xs font-bold text-gray-400 hover:text-primary transition-colors underline decoration-dotted underline-offset-4">
+        Saisie manuelle du token
+      </button>
+      
+      <div id="manual-entry" class="hidden mt-4 space-y-3">
+          <input type="text" id="manual-token" placeholder="Coller le token UUID..." 
+                 class="w-full bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm font-mono">
+          <button onclick="handleScan(document.getElementById('manual-token').value)" 
+                  class="w-full bg-gray-900 text-white rounded-xl py-3 text-sm font-bold hover:bg-gray-800 transition-colors">
+            Valider manuellement
+          </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent History -->
+  {% if recent_stamps %}
+  <div class="mt-10">
+    <h3 class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-4">Derniers passages</h3>
+    <div class="space-y-3">
+      {% for stamp in recent_stamps %}
+      <div class="bg-white border border-gray-50 rounded-2xl p-4 flex items-center gap-4 shadow-sm">
+          <div class="w-10 h-10 rounded-xl bg-primary/5 text-primary flex items-center justify-center font-bold text-lg flex-shrink-0">
+              {{ stamp.card.customer_name|first }}
+          </div>
+          <div class="flex-1">
+              <div class="text-sm font-bold text-gray-900">{{ stamp.card.customer_name }}</div>
+              <div class="text-[10px] text-gray-500 font-medium uppercase">{{ stamp.stamped_at|date:"H:i" }} — +{{ stamp.amount|floatformat }} {{ program.unit_label }}</div>
+          </div>
+          <div class="text-green-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Overlays -->
+<div id="overlay-success" class="status-overlay bg-white/90">
+    <div class="max-w-sm w-full bg-white rounded-[3rem] p-10 shadow-2xl border border-gray-100">
+      <div class="text-6xl mb-6">🎉</div>
+      <h2 id="success-name" class="text-2xl font-black text-gray-900 mb-2">Client</h2>
+      <p id="success-msg" class="text-gray-500 mb-8 font-medium">Point ajouté avec succès !</p>
+      
+      <div id="reward-badge" class="hidden mb-8 bg-orange-50 text-orange-600 px-6 py-3 rounded-2xl font-black text-sm uppercase tracking-wider animate-bounce border border-orange-100">
+        🎁 Récompense débloquée !
+      </div>
+      
+      <button onclick="hideOverlays()" class="w-full py-4 bg-primary text-white font-bold rounded-2xl shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
+        Continuer
+      </button>
+    </div>
+</div>
+
+<div id="overlay-error" class="status-overlay bg-red-50/90">
+    <div class="max-w-sm w-full bg-white rounded-[3rem] p-10 shadow-2xl border border-red-100">
+      <div class="text-6xl mb-6">❌</div>
+      <h2 class="text-2xl font-black text-gray-900 mb-2">Erreur</h2>
+      <p id="error-msg" class="text-gray-500 mb-8 font-medium">Token non reconnu ou expiré.</p>
+      <button onclick="hideOverlays()" class="w-full py-4 bg-gray-900 text-white font-bold rounded-2xl hover:bg-gray-800 transition-colors">
+        Réessayer
+      </button>
+    </div>
+</div>
+
+<script>
+// Auto-close sidebar on load
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof closeSidebar === 'function') closeSidebar();
+});
+
+const html5QrCode = new Html5Qrcode("reader");
+const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+function onScanSuccess(decodedText, decodedResult) {
+    html5QrCode.pause();
+    handleScan(decodedText);
+}
+
+function handleScan(rawToken) {
+    // Si c'est une URL (ex: https://.../card/uuid/), on extrait uniquement l'UUID
+    let token = rawToken;
+    const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+    const match = rawToken.match(uuidRegex);
+    if (match) {
+        token = match[0];
+    }
+
+    const amount = document.getElementById('scan-amount').value;
+    if (!amount || parseFloat(amount) <= 0) {
+        showError("Veuillez saisir un montant valide.");
+        return;
+    }
+    const formData = new FormData();
+    formData.append('amount', amount);
+
+    fetch(`/stamp/${token}/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'X-Requested-With': 'XMLHttpRequest',
+        }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            showSuccess(data);
+        } else {
+            showError(data.error || "Une erreur est survenue");
+        }
+    })
+    .catch(err => {
+        showError("Token invalide ou erreur réseau.");
+    });
+}
+
+function showSuccess(data) {
+    document.getElementById('overlay-success').style.display = 'grid';
+    document.getElementById('success-name').textContent = data.customer_name;
+    document.getElementById('reward-badge').classList.toggle('hidden', !data.reward_unlocked);
+    // Success sound
+    new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3').play().catch(() => {});
+}
+
+function showError(msg) {
+    document.getElementById('overlay-error').style.display = 'grid';
+    document.getElementById('error-msg').textContent = msg;
+    // Error sound
+    new Audio('https://assets.mixkit.co/active_storage/sfx/2571/2571-preview.mp3').play().catch(() => {});
+}
+
+function hideOverlays() {
+    document.getElementById('overlay-success').style.display = 'none';
+    document.getElementById('overlay-error').style.display = 'none';
+    if (html5QrCode.getState() === 3) { // 3 = PAUSED
+        html5QrCode.resume();
+    }
+}
+
+
+html5QrCode.start({ facingMode: "environment" }, qrConfig, onScanSuccess);
+
+// Stop camera on navigation
+window.addEventListener('beforeunload', () => {
+    if (html5QrCode.getState() !== 1) { // 1 = NOT_STARTED
+        html5QrCode.stop().catch(err => console.error(err));
+    }
+});
+
+// Also stop if navigating away via sidebar links (sometimes needed for SPA-like feel or heavy pages)
+document.querySelectorAll('aside a').forEach(link => {
+    link.addEventListener('click', () => {
+        if (html5QrCode.getState() !== 1) {
+            html5QrCode.stop().catch(err => {});
+        }
+    });
+});
+</script>
+{% endblock %}

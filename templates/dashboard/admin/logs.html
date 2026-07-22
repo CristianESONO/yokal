@@ -1,0 +1,64 @@
+{% extends 'dashboard/admin/base.html' %}
+{% block admin_breadcrumb %}Console Admin / Logs API{% endblock %}
+
+{% block admin_content %}
+<div class="space-y-6">
+
+  <header>
+    <h1 class="text-2xl font-bold tracking-tight text-zinc-950">Journal d'Activité Globale</h1>
+    <p class="mt-1 text-sm text-zinc-500">Historique complet de toutes les transactions de tampons et points sur la plateforme.</p>
+  </header>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-4 shadow-sm">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Total</div>
+      <div class="mt-1 font-mono text-2xl font-bold text-zinc-950">{{ total_logs }}</div>
+    </div>
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-4 shadow-sm">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Aujourd'hui</div>
+      <div class="mt-1 font-mono text-2xl font-bold text-emerald-600">{{ today_logs }}</div>
+    </div>
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-4 shadow-sm">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Volume Total</div>
+      <div class="mt-1 font-mono text-2xl font-bold text-zinc-950">{{ total_volume|floatformat:0 }}</div>
+    </div>
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-4 shadow-sm">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Ce mois</div>
+      <div class="mt-1 font-mono text-2xl font-bold text-zinc-950">{{ month_logs }}</div>
+    </div>
+  </div>
+
+  <!-- Logs Table -->
+  <div class="overflow-hidden rounded-xl bg-white border border-zinc-200/80 shadow-sm">
+    <div class="px-5 py-4 border-b border-zinc-100 flex items-center justify-between">
+      <h2 class="text-sm font-semibold text-zinc-900">Dernières {{ logs|length }} transactions</h2>
+    </div>
+    <table class="w-full text-left">
+      <thead>
+        <tr class="bg-zinc-50 border-b border-zinc-100">
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Heure</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Client</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Marchand</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Programme</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400 text-right">Montant</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-zinc-100">
+        {% for s in logs %}
+        <tr class="hover:bg-zinc-50/50 transition-colors">
+          <td class="px-5 py-3 font-mono text-xs text-zinc-400 whitespace-nowrap">{{ s.stamped_at|date:"d M H:i" }}</td>
+          <td class="px-5 py-3 text-sm font-medium text-zinc-900">{{ s.card.customer_name }}</td>
+          <td class="px-5 py-3 text-xs text-zinc-600">{{ s.card.program.merchant.business_name }}</td>
+          <td class="px-5 py-3 text-xs text-zinc-400">{{ s.card.program.name }}</td>
+          <td class="px-5 py-3 text-right font-mono text-sm font-bold text-primary">+{{ s.amount|floatformat:0 }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="px-5 py-10 text-center text-sm text-zinc-400">Aucune transaction enregistrée.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

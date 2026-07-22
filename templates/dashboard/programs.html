@@ -1,0 +1,143 @@
+{% extends 'dashboard/base.html' %}
+{% block dash_content %}
+
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+  <div>
+    <h1 class="text-2xl md:text-3xl font-black text-gray-900 mb-1">Mes programmes</h1>
+    <p class="text-sm text-gray-500 font-medium">Gérez vos programmes de fidélité et leurs clients</p>
+  </div>
+  <a href="{% url 'loyalty:program_setup' %}?new=1" class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary text-white font-black text-sm rounded-xl hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" stroke-width="2.5" stroke-linecap="round"/></svg>
+    Nouveau programme
+  </a>
+</div>
+
+{% if user.merchant_profile.slug %}
+<div class="bg-white rounded-[2rem] border border-primary/20 shadow-md shadow-primary/5 p-6 md:p-8 mb-8">
+  <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div>
+      <div class="text-[10px] font-black text-primary uppercase tracking-widest mb-2">Lien global recommandé</div>
+      <h2 class="text-lg font-black text-gray-900 mb-1">Inscription à tous vos programmes</h2>
+      <p class="text-xs text-gray-500 font-medium">Partagez ce lien unique — vos clients choisissent le(s) programme(s) souhaité(s).</p>
+      <p class="text-[10px] text-gray-400 font-medium mt-3 break-all">{{ request.scheme }}://{{ request.get_host }}{% url 'loyalty:merchant_enroll' merchant_slug=user.merchant_profile.slug %}</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="{% url 'dashboard:settings' %}?tab=partage" class="px-4 py-3 bg-primary text-white text-xs font-black rounded-xl">Copier / QR</a>
+      <a href="{% url 'loyalty:merchant_enroll' merchant_slug=user.merchant_profile.slug %}" target="_blank" class="px-4 py-3 bg-gray-100 text-gray-900 text-xs font-black rounded-xl">Aperçu</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% if program_rows %}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  {% for row in program_rows %}
+  {% with p=row.program %}
+  <div class="bg-white rounded-[2rem] border {% if row.is_active %}border-primary shadow-md shadow-primary/10{% elif not row.is_running %}border-amber-200 opacity-90{% else %}border-gray-100 shadow-sm{% endif %} overflow-hidden">
+    <div class="h-2" style="background-color: {{ p.color_primary|default:'#3b82f6' }};"></div>
+    <div class="p-6 md:p-8">
+      <div class="flex items-start justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-lg font-black text-gray-900">{{ p.name }}</h2>
+          <p class="text-xs text-gray-400 font-medium mt-1">
+            {% if p.program_type == 'visits' %}Tampons{% elif p.program_type == 'points' %}Points{% else %}Montant{% endif %}
+            · Seuil {{ p.reward_threshold }} · {{ p.currency }}
+            {% if p.ends_at %} · Fin {{ p.ends_at|date:"d/m/Y" }}{% endif %}
+          </p>
+        </div>
+        {% if row.is_active %}
+        <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest rounded-full">Actif</span>
+        {% elif not row.is_running %}
+        <span class="px-3 py-1 bg-amber-50 text-amber-700 text-[10px] font-black uppercase tracking-widest rounded-full border border-amber-200">Expiré</span>
+        {% endif %}
+      </div>
+
+      <div class="grid grid-cols-2 gap-4 mb-6">
+        <div class="bg-gray-50 rounded-2xl p-4">
+          <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Clients</div>
+          <div class="text-2xl font-black text-gray-900">{{ row.clients_count }}</div>
+        </div>
+        <div class="bg-gray-50 rounded-2xl p-4">
+          <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Récompense</div>
+          <div class="text-sm font-bold text-gray-900 truncate">{{ p.reward_description|default:"—" }}</div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 md:gap-3">
+        <a href="{% url 'dashboard:switch_program' %}?program={{ p.id }}&next={% url 'dashboard:overview' %}"
+           class="flex-1 sm:flex-none text-center px-4 py-3 md:py-2.5 bg-gray-900 text-white text-[10px] md:text-xs font-black rounded-xl hover:bg-gray-800 transition-all">
+          Utiliser
+        </a>
+        <a href="{% url 'loyalty:program_setup' %}?program={{ p.id }}"
+           class="flex-1 sm:flex-none text-center px-4 py-3 md:py-2.5 bg-gray-100 text-gray-900 text-[10px] md:text-xs font-black rounded-xl hover:bg-gray-200 transition-all">
+          Modifier
+        </a>
+        <a href="{% url 'dashboard:settings' %}?program={{ p.id }}&tab=programme"
+           class="flex-1 sm:flex-none text-center px-4 py-3 md:py-2.5 bg-gray-100 text-gray-900 text-[10px] md:text-xs font-black rounded-xl hover:bg-gray-200 transition-all">
+          Réglages
+        </a>
+        <a href="{% url 'loyalty:new_card' %}?program={{ p.id }}"
+           class="flex-1 sm:flex-none text-center px-4 py-3 md:py-2.5 bg-primary/10 text-primary text-[10px] md:text-xs font-black rounded-xl hover:bg-primary/20 transition-all">
+          + Client
+        </a>
+        <button type="button" onclick="openProgramQr({{ p.id }})"
+                class="flex-1 sm:flex-none text-center px-4 py-3 md:py-2.5 bg-gray-100 text-gray-900 text-[10px] md:text-xs font-black rounded-xl hover:bg-gray-200 transition-all">
+          QR Code
+        </button>
+        {% if program_rows|length > 1 %}
+        <form method="post" action="{% url 'loyalty:delete_program' program_id=p.id %}" class="flex-1 sm:flex-none"
+              onsubmit="return confirm('Supprimer le programme « {{ p.name }} » ? Les cartes clients seront conservées.')">
+          {% csrf_token %}
+          <button type="submit"
+                  class="w-full text-center px-4 py-3 md:py-2.5 bg-red-50 text-red-600 text-[10px] md:text-xs font-black rounded-xl hover:bg-red-100 transition-all">
+            Supprimer
+          </button>
+        </form>
+        {% endif %}
+      </div>
+
+      <p class="text-[10px] text-gray-400 font-medium mt-4 break-all">
+        {{ request.scheme }}://{{ request.get_host }}{% url 'loyalty:self_enroll' program_id=p.id %}
+      </p>
+    </div>
+  </div>
+  {% endwith %}
+  {% endfor %}
+</div>
+
+<div id="program-qr-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onclick="closeProgramQr(event)">
+  <div class="bg-white rounded-[2rem] p-8 max-w-sm w-full shadow-2xl text-center" onclick="event.stopPropagation()">
+    <h3 class="text-lg font-black text-gray-900 mb-2">QR Code d'inscription</h3>
+    <p id="program-qr-name" class="text-xs text-gray-400 font-medium mb-6"></p>
+    <img id="program-qr-img" src="" alt="QR Code" class="w-64 h-64 mx-auto rounded-2xl border border-gray-100">
+    <button type="button" onclick="closeProgramQr()" class="mt-6 w-full px-4 py-3 bg-gray-100 hover:bg-gray-200 text-gray-900 font-bold rounded-xl transition-all">Fermer</button>
+  </div>
+</div>
+
+<script>
+function openProgramQr(programId) {
+  const modal = document.getElementById('program-qr-modal');
+  const img = document.getElementById('program-qr-img');
+  img.src = '/program/' + programId + '/qr/';
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+function closeProgramQr(event) {
+  if (event && event.target !== event.currentTarget) return;
+  document.getElementById('program-qr-modal').classList.add('hidden');
+  document.body.style.overflow = '';
+}
+</script>
+
+{% else %}
+<div class="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-12 text-center max-w-lg mx-auto">
+  <div class="text-5xl mb-4">🎁</div>
+  <h2 class="text-xl font-black text-gray-900 mb-2">Aucun programme</h2>
+  <p class="text-sm text-gray-500 mb-8">Créez votre premier programme pour accueillir vos clients.</p>
+  <a href="{% url 'loyalty:program_setup' %}?new=1" class="inline-flex px-8 py-4 bg-primary text-white font-black rounded-xl hover:bg-primary/90 transition-all">
+    Créer mon premier programme
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

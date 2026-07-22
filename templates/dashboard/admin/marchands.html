@@ -1,0 +1,106 @@
+{% extends 'dashboard/admin/base.html' %}
+{% block admin_breadcrumb %}Console Admin / Marchands{% endblock %}
+
+{% block admin_content %}
+<div class="space-y-6">
+
+  <header class="flex items-end justify-between">
+    <div>
+      <h1 class="text-2xl font-bold tracking-tight text-zinc-950">Marchands</h1>
+      <p class="mt-1 text-sm text-zinc-500">Annuaire complet des commerces inscrits sur la plateforme.</p>
+    </div>
+  </header>
+
+  <!-- Search bar -->
+  <form method="get" class="flex gap-3">
+    <div class="relative flex-1 max-w-sm">
+      <svg class="admin-inline-icon absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+      </svg>
+      <input type="text" name="q" value="{{ search_query }}" placeholder="Rechercher un marchand…" class="w-full pl-9 pr-4 py-2.5 text-sm rounded-lg border border-zinc-200 bg-white focus:ring-2 focus:ring-zinc-300 focus:outline-none">
+    </div>
+    <button type="submit" class="px-4 py-2.5 bg-zinc-900 text-white text-sm font-medium rounded-lg hover:bg-zinc-800 transition-colors">
+      Rechercher
+    </button>
+  </form>
+
+  <!-- Stats row -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-4 shadow-sm">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Total</div>
+      <div class="mt-1 font-mono text-2xl font-bold text-zinc-950">{{ total_merchants }}</div>
+    </div>
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-4 shadow-sm">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">API Active</div>
+      <div class="mt-1 font-mono text-2xl font-bold text-emerald-600">{{ active_count }}</div>
+    </div>
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-4 shadow-sm">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Total Cartes</div>
+      <div class="mt-1 font-mono text-2xl font-bold text-zinc-950">{{ total_cards }}</div>
+    </div>
+    <div class="rounded-xl bg-white border border-zinc-200/80 p-4 shadow-sm">
+      <div class="text-[10px] font-bold uppercase tracking-widest text-zinc-400">Ce mois</div>
+      <div class="mt-1 font-mono text-2xl font-bold text-zinc-950">{{ new_this_month }}</div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-hidden rounded-xl bg-white border border-zinc-200/80 shadow-sm">
+    <table class="w-full text-left">
+      <thead>
+        <tr class="bg-zinc-50 border-b border-zinc-200/50">
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Commerce</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">Pays</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">WhatsApp</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400">API</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400 text-right">Cartes</th>
+          <th class="px-5 py-3 text-[10px] font-bold uppercase tracking-wider text-zinc-400 text-center">Inscrits</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-zinc-100">
+        {% for m in merchants %}
+        <tr class="hover:bg-zinc-50/50 transition-colors">
+          <td class="px-5 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex w-9 h-9 items-center justify-center rounded-lg bg-zinc-100 text-xs font-bold text-zinc-700 border border-zinc-200 overflow-hidden shrink-0">
+                {% if m.logo %}
+                  <img src="{{ m.logo.url }}" alt="{{ m.business_name }}" class="w-full h-full object-contain">
+                {% else %}
+                  {{ m.business_name|slice:":2"|upper }}
+                {% endif %}
+              </div>
+              <div>
+                <a href="{% url 'admin_marchand_detail' m.id %}" class="text-sm font-semibold text-zinc-900 hover:text-primary">{{ m.business_name }}</a>
+                <div class="text-[10px] text-zinc-400">{{ m.user.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-5 py-4 text-xs text-zinc-600">{{ m.country }}</td>
+          <td class="px-5 py-4">
+            {% if m.whatsapp_connected %}
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200"><span class="size-1.5 rounded-full bg-emerald-500"></span>Connecté</span>
+            {% elif m.whatsapp_enabled %}
+              <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 border border-amber-200"><span class="size-1.5 rounded-full bg-amber-500"></span>En attente</span>
+            {% else %}
+              <span class="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-400 border border-zinc-200">—</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-4">
+            {% if m.api_key_active %}
+              <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">Active</span>
+            {% else %}
+              <span class="inline-flex items-center gap-1 rounded-full bg-zinc-100 px-2 py-0.5 text-[10px] font-bold text-zinc-400 border border-zinc-200">Inactive</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-4 text-right font-mono text-xs font-semibold text-zinc-900">{{ m.card_count }}</td>
+          <td class="px-5 py-4 text-center text-xs text-zinc-500">{{ m.created_at|date:"d M Y" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="px-5 py-10 text-center text-sm text-zinc-400">Aucun marchand trouvé.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+{% endblock %}

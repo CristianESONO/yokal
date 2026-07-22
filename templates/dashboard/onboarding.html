@@ -1,0 +1,94 @@
+{% extends "dashboard/base.html" %}
+
+{% block title %}Onboarding - Yokalma{% endblock %}
+
+{% block dash_content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Bienvenue sur Yokalma !</h1>
+        <p class="text-gray-600 mt-2">Suivez ces 5 étapes pour lancer votre programme de fidélité</p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="mb-8">
+        <div class="flex justify-between text-sm text-gray-500 mb-2">
+            <span>Progression</span>
+            <span>{{ progress.percentage }}%</span>
+        </div>
+        <div class="w-full bg-gray-200 rounded-full h-3">
+            <div class="bg-[#D4FF4E] h-3 rounded-full transition-all duration-500" style="width: {{ progress.percentage }}%"></div>
+        </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="space-y-4">
+        {% for step in steps %}
+        <div class="bg-white rounded-xl p-6 flex items-center justify-between border border-gray-200 shadow-sm">
+            <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-full flex items-center justify-center {% if step.completed %}bg-[#D4FF4E] text-black{% else %}bg-gray-200 text-gray-500{% endif %}">
+                    {% if step.completed %}
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                    {% else %}
+                        <span class="font-bold">{{ forloop.counter }}</span>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3 class="text-gray-900 font-semibold">{{ step.get_step_type_display }}</h3>
+                    <p class="text-gray-500 text-sm mt-1">
+                        {% if step.step_type == 'profile' %}Complétez votre profil marchand
+                        {% elif step.step_type == 'program' %}Créez votre premier programme de fidélité
+                        {% elif step.step_type == 'card' %}Créez votre première carte client
+                        {% elif step.step_type == 'wallet' %}Configurez Google Wallet
+                        {% elif step.step_type == 'whatsapp' %}Connectez WhatsApp
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            {% if not step.completed %}
+                <button onclick="markComplete('{{ step.step_type }}')" class="bg-[#D4FF4E] text-black px-4 py-2 rounded-lg font-semibold hover:bg-[#c4ef3e] transition">
+                    Marquer comme terminé
+                </button>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if progress.percentage == 100 %}
+    <div class="mt-8 bg-green-50 border border-green-200 rounded-xl p-6 text-center">
+        <h3 class="text-green-700 font-bold text-xl mb-2">🎉 Félicitations !</h3>
+        <p class="text-gray-600">Vous avez terminé l'onboarding. Commencez à utiliser Yokalma !</p>
+        <a href="{% url 'dashboard:overview' %}" class="inline-block mt-4 bg-[#D4FF4E] text-black px-6 py-3 rounded-lg font-semibold hover:bg-[#c4ef3e] transition">
+            Aller au tableau de bord
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function markComplete(stepType) {
+    const url = '/dashboard/onboarding/complete/' + stepType + '/';
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert(data.error || 'Erreur lors de la mise à jour');
+        }
+    });
+}
+
+function getCookie(name) {
+    const value = '; ' + document.cookie;
+    const parts = value.split('; ' + name + '=');
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+</script>
+{% endblock %}

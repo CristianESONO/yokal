@@ -1,0 +1,44 @@
+{% if merchant_programs %}
+<div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 bg-white border border-gray-100 rounded-2xl px-4 py-3 shadow-sm">
+  <div class="flex items-center gap-3 min-w-0">
+    <div class="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="min-w-0">
+      <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Programme actif</div>
+      <div class="text-sm font-bold text-gray-900 truncate">
+        {% if current_program %}{{ current_program.name }}{% else %}Aucun programme{% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="flex items-center gap-2 flex-wrap">
+    {% if merchant_programs.count > 1 %}
+    <select onchange="switchProgram(this.value)" class="flex-1 sm:flex-none min-w-[180px] px-4 py-2.5 bg-gray-50 border border-gray-100 rounded-xl text-sm font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary/20">
+      {% for p in merchant_programs %}
+      <option value="{{ p.id }}" {% if current_program and p.id == current_program.id %}selected{% endif %}>{{ p.name }}</option>
+      {% endfor %}
+    </select>
+    {% endif %}
+    <a href="{% url 'dashboard:programs' %}" class="px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-900 text-xs font-black rounded-xl transition-all whitespace-nowrap">
+      Tous les programmes
+    </a>
+    <a href="{% url 'loyalty:program_setup' %}?new=1" class="px-4 py-2.5 bg-primary hover:bg-primary/90 text-white text-xs font-black rounded-xl transition-all whitespace-nowrap">
+      + Nouveau
+    </a>
+  </div>
+</div>
+<script>
+function switchProgram(programId) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('program', programId);
+  window.location.href = url.toString();
+}
+</script>
+{% elif request.resolver_match.url_name != 'programs' %}
+<div class="mb-6 bg-amber-50 border border-amber-100 rounded-2xl px-5 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+  <p class="text-sm font-bold text-amber-800">Créez votre premier programme de fidélité pour commencer.</p>
+  <a href="{% url 'loyalty:program_setup' %}?new=1" class="px-5 py-2.5 bg-primary text-white text-xs font-black rounded-xl hover:bg-primary/90 transition-all text-center">
+    Créer un programme
+  </a>
+</div>
+{% endif %}
