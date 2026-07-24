@@ -1,5 +1,6 @@
 import io
 import qrcode
+from django.conf import settings
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.exceptions import ValidationError
 from django.contrib.auth.decorators import login_required
@@ -25,21 +26,8 @@ from apps.billing.decorators import subscription_required
 
 
 def landing(request):
-    steps = [
-        {'title': 'Créez votre compte', 'desc': 'Inscription en 2 minutes. Renseignez votre commerce, vos couleurs et votre récompense.'},
-        {'title': 'Personnalisez', 'desc': 'Couleurs, logo, nombre de tampons et description de la récompense à votre image.'},
-        {'title': 'Partagez', 'desc': 'Vos clients scannent le QR code et ajoutent la carte à Google Wallet instantanément.'},
-    ]
-    pricing_features = [
-        'Clients illimités',
-        'Google Wallet intégré',
-        'Personnalisation complète (logo, couleurs)',
-        'Dashboard analytics en temps réel',
-        'Scanner QR en caisse',
-        'Récompenses automatiques',
-        'Historique des tampons',
-    ]
-    return render(request, 'landing.html', {'steps': steps, 'pricing_features': pricing_features})
+    # La vitrine publique est servie par Next.js. On redirige vers ce site.
+    return redirect(settings.VITRINE_URL)
 
 
 # ─────────────────────────────────────────────

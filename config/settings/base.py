@@ -10,6 +10,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-change-me-in-production')
 
+# URL du site vitrine (Next.js). La landing publique est servie par Next désormais :
+# le '/' de Django et les redirects "accueil" pointent ici.
+# Local : http://localhost:3000 — Prod : https://yokalma.com
+VITRINE_URL = os.getenv('VITRINE_URL', 'http://localhost:3000')
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',

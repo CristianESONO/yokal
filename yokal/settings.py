@@ -14,6 +14,11 @@ DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '127.0.0.1,localhost,yokal.linkup.sn').split(',')
 
+# URL du site vitrine (Next.js). La landing publique est servie par Next désormais :
+# le '/' de Django et les redirects "accueil" pointent ici.
+# Local : http://localhost:3000 — Prod : https://yokalma.com
+VITRINE_URL = os.getenv('VITRINE_URL', 'http://localhost:3000')
+
 INSTALLED_APPS = [
     'unfold',
     'django.contrib.admin',
